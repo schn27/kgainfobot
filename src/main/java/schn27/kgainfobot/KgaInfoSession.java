@@ -55,7 +55,8 @@ public class KgaInfoSession {
 			HttpResponse<String> response = Unirest.get("http://priem.kgainfo.spb.ru/user/requests").asString();
 			Document doc = Jsoup.parse(response.getBody());
 			String captchaHash = getCaptchaHash(doc);
-			System.out.println("captcha = " + uncaptcha.decode(captchaHash) + " " + captchaHash);
+			
+			getStructureList(doc);
 			
 		} catch (UnirestException ex) {
 			Logger.getLogger(CaptchaMd5Decoder.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,11 +65,22 @@ public class KgaInfoSession {
 		return result;
 	}
 	
+	private void getStructureList(Document doc) {
+		Elements tags = doc.getElementsByTag("select");
+		for (Element tag : tags) {
+			if (tag.attr("name").equals("structure_code")) {
+				Elements options = tag.children();
+				for (Element option : options)
+					System.out.println(option.attr("value") + " " + option.attr("label"));
+			}
+		}
+	}
+	
 	private String getCaptchaHash(Document doc) {
-		Elements inputTags = doc.getElementsByTag("input");
-		for (Element inputTag : inputTags) {
-			if (inputTag.attr("name").equals("captcha_md5"))
-				return inputTag.attr("value");
+		Elements tags = doc.getElementsByTag("input");
+		for (Element tag : tags) {
+			if (tag.attr("name").equals("captcha_md5"))
+				return tag.attr("value");
 		}
 		return "";
 	}
