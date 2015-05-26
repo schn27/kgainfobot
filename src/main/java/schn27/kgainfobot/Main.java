@@ -17,9 +17,17 @@ public class Main {
 	public static void main(String[] args) throws IOException, UnirestException {
 		setShutdownHook(true);
 		
-		KgaInfoSession session = new KgaInfoSession();
+		Session session = new Session();
 		if (session.login("H6Pu9bp", "NawVUVi")) {
-			session.register();
+			RegisterRequest request = new RegisterRequest();
+			request.structureCode = 811000;
+			request.departmentCode = 811032;
+			request.themeId = 18;
+			request.themeName = "Красные линии УДС";
+			request.desiredTime = new Time("11:32");
+			request.comment = "123";
+			boolean res = session.register(request);
+			System.out.println("register result = " + res);
 		} else {
 			System.err.println("Login failed");
 		}
