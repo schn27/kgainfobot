@@ -38,7 +38,6 @@ public class Session {
 			Unirest.get(host).asString();
 
 			HttpResponse<String> response = Unirest.post(host + "/login")
-					.header("Content-type", "application/x-www-form-urlencoded")
 					.header("Accept-encoding", "identity")
 					.field("username", username)
 					.field("password", password)
