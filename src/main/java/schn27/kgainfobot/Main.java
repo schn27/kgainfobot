@@ -14,9 +14,10 @@ import java.io.IOException;
  * @author amalikov
  */
 public class Main {
+
 	public static void main(String[] args) throws IOException, UnirestException {
 		setShutdownHook(true);
-		
+
 		Session session = new Session();
 		if (session.login("H6Pu9bp", "NawVUVi")) {
 			RegisterRequest request = new RegisterRequest();
@@ -28,34 +29,32 @@ public class Main {
 			request.comment = "123";
 			boolean res = session.register(request);
 			System.out.println("register result = " + res);
-		} else {
+		} else
 			System.err.println("Login failed");
-		}
-		
+
 		Unirest.shutdown();
 		setShutdownHook(false);
 	}
-	
-    private static void setShutdownHook(boolean set) {
-        if (hook == null) {
-            hook = new Thread() {
-                @Override
-                public void run() {
+
+	private static void setShutdownHook(boolean set) {
+		if (hook == null)
+			hook = new Thread() {
+				@Override
+				public void run() {
 					System.out.println("Shutdown hook");
-					
+
 					try {
 						Unirest.shutdown();
 					} catch (IOException ex) {
 					}
-                }
-            };
-        }
-        
-        if (set)
-            Runtime.getRuntime().addShutdownHook(hook);
-        else
-            Runtime.getRuntime().removeShutdownHook(hook);
-    }
+				}
+			};
 
-    private static Thread hook = null;
+		if (set)
+			Runtime.getRuntime().addShutdownHook(hook);
+		else
+			Runtime.getRuntime().removeShutdownHook(hook);
+	}
+
+	private static Thread hook = null;
 }

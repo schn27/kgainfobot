@@ -10,6 +10,7 @@ package schn27.kgainfobot;
  * @author amalikov
  */
 public final class Structure {
+
 	public Structure(int code, String name) {
 		this.code = code;
 		this.name = name;
@@ -18,7 +19,7 @@ public final class Structure {
 	public Structure(String code, String name) {
 		this(Integer.parseInt(code), name);
 	}
-	
+
 	public final int code;
 	public final String name;
 }

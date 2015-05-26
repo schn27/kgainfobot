@@ -10,6 +10,7 @@ package schn27.kgainfobot;
  * @author amalikov
  */
 public class RegisterRequest {
+
 	public int structureCode;
 	public int departmentCode;
 	public int themeId;
