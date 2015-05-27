@@ -16,6 +16,8 @@
  */
 package schn27.kgainfobot;
 
+import schn27.kgainfobot.data.Time;
+import schn27.kgainfobot.data.RegistrationRequest;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
@@ -31,7 +33,7 @@ public class Main {
 
 		Session session = new Session();
 		if (session.login("H6Pu9bp", "NawVUVi")) {
-			RegisterRequest request = new RegisterRequest();
+			RegistrationRequest request = new RegistrationRequest();
 			request.structureCode = 811000;
 			request.departmentCode = 811032;
 			request.themeId = 18;

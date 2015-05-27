@@ -14,18 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package schn27.kgainfobot;
+package schn27.kgainfobot.data;
 
 /**
  *
  * @author amalikov
  */
-public class RegisterRequest {
+public final class Theme {
 
-	public int structureCode;
-	public int departmentCode;
-	public int themeId;
-	public String themeName;
-	public Time desiredTime;
-	public String comment;
+	public Theme(int id, String name) {
+		this.id = id;
+		this.name = name;
+	}
+
+	public Theme(String id, String name) {
+		this(Integer.parseInt(id), name);
+	}
+
+	public final int id;
+	public final String name;
 }

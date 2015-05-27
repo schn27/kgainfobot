@@ -14,15 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package schn27.kgainfobot;
+package schn27.kgainfobot.data;
 
 /**
  *
  * @author amalikov
  */
 public final class Time {
-
-	public static final int INVALID_VALUE = -1;
 
 	public Time(int value) {
 		if (value >= 0 && value < 24 * 60)
@@ -34,7 +32,15 @@ public final class Time {
 	public Time(String time) {
 		this(fromString(time));
 	}
+	
+	public static Time getInvalid() {
+		return invalid;
+	}
 
+	public boolean isValid() {
+		return value != INVALID_VALUE;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%02d:%02d", value / 60, value % 60);
@@ -42,8 +48,15 @@ public final class Time {
 
 	public final int value;
 
+	private Time() {
+		value = INVALID_VALUE;
+	}
+	
 	private static int fromString(String time) {
 		String[] parts = time.split(":");
 		return (parts.length == 2) ? Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]) : 0;
 	}
+	
+	private static final int INVALID_VALUE = -1;
+	private static final Time invalid = new Time();
 }

@@ -14,23 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package schn27.kgainfobot;
+package schn27.kgainfobot.data;
 
 /**
  *
  * @author amalikov
  */
-public final class Theme {
+public final class Department {
 
-	public Theme(int id, String name) {
+	public Department(int id, int code, String name, String position) {
 		this.id = id;
+		this.code = code;
 		this.name = name;
+		this.position = position;
 	}
 
-	public Theme(String id, String name) {
-		this(Integer.parseInt(id), name);
+	public Department(String id, String code, String name, String position) {
+		this(Integer.parseInt(id), Integer.parseInt(code), name, position);
 	}
 
 	public final int id;
+	public final int code;
 	public final String name;
+	public final String position;
 }

@@ -16,6 +16,11 @@
  */
 package schn27.kgainfobot;
 
+import schn27.kgainfobot.data.Time;
+import schn27.kgainfobot.data.Theme;
+import schn27.kgainfobot.data.Structure;
+import schn27.kgainfobot.data.RegistrationRequest;
+import schn27.kgainfobot.data.Department;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -122,7 +127,7 @@ public class Session {
 		return list;
 	}
 
-	public boolean register(RegisterRequest request) {
+	public boolean register(RegistrationRequest request) {
 		boolean result = false;
 
 		try {
@@ -133,7 +138,7 @@ public class Session {
 			List<String> dateList = getDateList(request.departmentCode);
 			if (!dateList.isEmpty()) {
 				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime);
-				if (time.value != Time.INVALID_VALUE) {
+				if (time.isValid()) {
 					System.out.println("chosen time = " + time);
 
 					response = Unirest.post(host + "/user/requests")
@@ -169,7 +174,7 @@ public class Session {
 	}
 
 	private Time getClosestTime(int code, String date, Time desiredTime) throws UnirestException {
-		Time res = new Time(Time.INVALID_VALUE);
+		Time res = Time.getInvalid();
 		List<Time> timeList = getTimeList(code, date);
 
 		if (!timeList.isEmpty()) {
