@@ -43,7 +43,6 @@ import org.jsoup.select.Elements;
 public class Session {
 
 	public Session() {
-		host = "http://priem.kgainfo.spb.ru";
 		uncaptcha = new CaptchaMd5Decoder();
 	}
 
@@ -53,7 +52,7 @@ public class Session {
 		try {
 			Unirest.get(host).asString();
 
-			HttpResponse<String> response = Unirest.post(host + "/login")
+			HttpResponse<String> response = Unirest.post(loginURL)
 					.header("Accept-encoding", "identity")
 					.field("username", username)
 					.field("password", password)
@@ -76,7 +75,7 @@ public class Session {
 		List<Structure> list = new ArrayList<>();
 
 		try {
-			HttpResponse<String> response = Unirest.get(host + "/user/requests").asString();
+			HttpResponse<String> response = Unirest.get(registrationURL).asString();
 			Document doc = Jsoup.parse(response.getBody());
 
 			Elements tags = doc.getElementsByTag("select");
@@ -93,11 +92,11 @@ public class Session {
 
 		return list;
 	}
-
+	
 	public List<Department> getDepartmentList(String code) throws UnirestException {
 		List<Department> list = new ArrayList<>();
 
-		HttpResponse<JsonNode> response = Unirest.post(host + "/service/getdep")
+		HttpResponse<JsonNode> response = Unirest.post(getDepartmentURL)
 				.field("code", code)
 				.asJson();
 
@@ -109,11 +108,11 @@ public class Session {
 
 		return list;
 	}
-
+	
 	public List<Theme> getThemeList(String code) throws UnirestException {
 		List<Theme> list = new ArrayList<>();
 
-		HttpResponse<JsonNode> response = Unirest.post(host + "/service/getthemes")
+		HttpResponse<JsonNode> response = Unirest.post(getThemeURL)
 				.field("code", code)
 				.asJson();
 
@@ -126,12 +125,12 @@ public class Session {
 
 		return list;
 	}
-
+	
 	public boolean register(RegistrationRequest request) {
 		boolean result = false;
 
 		try {
-			HttpResponse<String> response = Unirest.get(host + "/user/requests").asString();
+			HttpResponse<String> response = Unirest.get(registrationURL).asString();
 			Document doc = Jsoup.parse(response.getBody());
 			String captchaHash = getCaptchaHash(doc);
 
@@ -139,9 +138,7 @@ public class Session {
 			if (!dateList.isEmpty()) {
 				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime);
 				if (time.isValid()) {
-					System.out.println("chosen time = " + time);
-
-					response = Unirest.post(host + "/user/requests")
+					response = Unirest.post(registrationURL)
 							.header("Accept-encoding", "identity")
 							.field("themes_id", request.themeId)
 							.field("structure_code", request.structureCode)
@@ -156,8 +153,8 @@ public class Session {
 							.asString();
 
 					if (response != null && response.getStatus() == 302) {
-						Unirest.get(host + "/user/addcomments").asString();
-						Unirest.post(host + "/user/addcomments")
+						Unirest.get(addCommentURL).asString();
+						Unirest.post(addCommentURL)
 								.field("comments", request.comment)
 								.field("send", "Отправить")
 								.asString();
@@ -197,7 +194,7 @@ public class Session {
 	private List<String> getDateList(int code) throws UnirestException {
 		List<String> list = new ArrayList<>();
 
-		HttpResponse<JsonNode> response = Unirest.post(host + "/service/getdate")
+		HttpResponse<JsonNode> response = Unirest.post(getDateURL)
 				.field("code", code)
 				.asJson();
 
@@ -207,11 +204,11 @@ public class Session {
 
 		return list;
 	}
-
+	
 	private List<Time> getTimeList(int code, String date) throws UnirestException {
 		List<Time> list = new ArrayList<>();
 
-		HttpResponse<JsonNode> response = Unirest.post(host + "/service/getfreetime")
+		HttpResponse<JsonNode> response = Unirest.post(getTimeURL)
 				.field("code", code).field("dates", date)
 				.asJson();
 
@@ -221,7 +218,7 @@ public class Session {
 
 		return list;
 	}
-
+	
 	private String getCaptchaHash(Document doc) {
 		Elements tags = doc.getElementsByTag("input");
 		for (Element tag : tags)
@@ -230,6 +227,14 @@ public class Session {
 		return "";
 	}
 
-	private final String host;
 	private final CaptchaMd5Decoder uncaptcha;
+	
+	private final static String host = "http://priem.kgainfo.spb.ru";
+	private final static String loginURL = host + "/login";
+	private final static String registrationURL = host + "/user/requests";
+	private final static String getDepartmentURL = host + "/service/getdep";
+	private final static String getThemeURL = host + "/service/getthemes";
+	private final static String addCommentURL = host + "/user/addcomments";
+	private final static String getDateURL = host + "/service/getdate";
+	private final static String getTimeURL = host + "/service/getfreetime";
 }
