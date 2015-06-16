@@ -28,7 +28,11 @@ public final class Time {
 	public String toString() {
 		return String.format("%02d:%02d", value / 60, value % 60);
 	}
-
+    
+    public boolean isValid() {
+        return value != INVALID_VALUE;
+    }
+    
 	public final int value;
 
 	private static int fromString(String time) {

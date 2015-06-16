@@ -121,10 +121,8 @@ public class Session {
 
 			List<String> dateList = getDateList(request.departmentCode);
 			if (!dateList.isEmpty()) {
-				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime);
-				if (time.value != Time.INVALID_VALUE) {
-					System.out.println("chosen time = " + time);
-
+				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime, request.timeout);
+				if (time.isValid()) {
 					response = Unirest.post(host + "/user/requests")
 							.header("Accept-encoding", "identity")
 							.field("themes_id", request.themeId)
@@ -157,23 +155,33 @@ public class Session {
 		return result;
 	}
 
-	private Time getClosestTime(int code, String date, Time desiredTime) throws UnirestException {
+	private Time getClosestTime(int code, String date, Time desiredTime, int timeout) throws UnirestException {
 		Time res = new Time(Time.INVALID_VALUE);
-		List<Time> timeList = getTimeList(code, date);
+        
+        long startTime = System.currentTimeMillis();
+        
+        while (!res.isValid() && (System.currentTimeMillis() - startTime < timeout)) {
+            List<Time> timeList = getTimeList(code, date);
 
-		if (!timeList.isEmpty()) {
-			res = timeList.get(0);
-			int delta = Math.abs(desiredTime.value - res.value);
-			for (int i = 1; i < timeList.size(); ++i) {
-				int newDelta = Math.abs(desiredTime.value - timeList.get(i).value);
-				if (newDelta >= delta)
-					break;
-				else {
-					res = timeList.get(i);
-					delta = newDelta;
-				}
-			}
-		}
+            if (!timeList.isEmpty()) {
+                res = timeList.get(0);
+                int delta = Math.abs(desiredTime.value - res.value);
+                for (int i = 1; i < timeList.size(); ++i) {
+                    int newDelta = Math.abs(desiredTime.value - timeList.get(i).value);
+                    if (newDelta >= delta)
+                        break;
+                    else {
+                        res = timeList.get(i);
+                        delta = newDelta;
+                    }
+                }
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                }
+            }
+        }
 
 		return res;
 	}

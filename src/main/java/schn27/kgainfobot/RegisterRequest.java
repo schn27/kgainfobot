@@ -10,11 +10,19 @@ package schn27.kgainfobot;
  * @author amalikov
  */
 public class RegisterRequest {
-
+    public RegisterRequest() {
+        structureCode = 0;
+        departmentCode = 0;
+        themeId = 0;
+        desiredTime = new Time("10:00");
+        comment = "";
+        timeout = 60;
+    }
+    
 	public int structureCode;
 	public int departmentCode;
 	public int themeId;
-	public String themeName;
 	public Time desiredTime;
 	public String comment;
+    public int timeout;
 }
