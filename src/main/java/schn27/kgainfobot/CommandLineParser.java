@@ -7,6 +7,8 @@ package schn27.kgainfobot;
 
 import java.util.HashMap;
 import java.util.Map;
+import schn27.kgainfobot.data.RegistrationRequest;
+import schn27.kgainfobot.data.Time;
 
 /**
  *
@@ -47,8 +49,8 @@ public class CommandLineParser {
         return args.getOrDefault("pass", "");
     }
     
-    public RegisterRequest getRegisterRequest() {
-        RegisterRequest request = new RegisterRequest();
+    public RegistrationRequest getRegisterRequest() {
+        RegistrationRequest request = new RegistrationRequest();
         request.structureCode = Integer.parseInt(args.getOrDefault("structure", "0"));
         request.departmentCode = Integer.parseInt(args.getOrDefault("department", "0"));
         request.themeId = Integer.parseInt(args.getOrDefault("theme", "0"));

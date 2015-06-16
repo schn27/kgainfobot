@@ -16,12 +16,14 @@
  */
 package schn27.kgainfobot;
 
-import schn27.kgainfobot.data.Time;
 import schn27.kgainfobot.data.RegistrationRequest;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.util.List;
+import schn27.kgainfobot.data.Department;
+import schn27.kgainfobot.data.Structure;
+import schn27.kgainfobot.data.Theme;
 
 /**
  *
@@ -59,7 +61,7 @@ public class Main {
 		setShutdownHook(false);
 	}
    
-    private static void doRegister(Session session, RegisterRequest request) {
+    private static void doRegister(Session session, RegistrationRequest request) {
 /*        request.structureCode = 811000;
         request.departmentCode = 811032;
         request.themeId = 1;

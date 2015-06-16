@@ -172,11 +172,11 @@ public class Session {
 	}
 
 	private Time getClosestTime(int code, String date, Time desiredTime, int timeout) throws UnirestException {
-		Time res = new Time(Time.INVALID_VALUE);
+		Time res = Time.getInvalid();
         
         long startTime = System.currentTimeMillis();
         
-        while (!res.isValid() && (System.currentTimeMillis() - startTime < timeout)) {
+        while (!res.isValid() && (System.currentTimeMillis() - startTime < timeout * 1000)) {
             List<Time> timeList = getTimeList(code, date);
 
             if (!timeList.isEmpty()) {
