@@ -85,7 +85,7 @@ public class CommandLineParser {
 		System.out.println("  getstructures: no parameter is required");
 		System.out.println("  getdepartments: code=<structure_code>");
 		System.out.println("  getthemes: code=<department_code>");
-		System.out.println("Example: ");
+		System.out.println("Example: java -jar kgainfobot-1.0-exe.jar login=H6Pu9bp pass=NawVUVi cmd=register structure=812000 department=812003 theme=11 time=11:30 comment=\"...\" timeout=60");
 	}
 
     private final Map<String, String> args;
