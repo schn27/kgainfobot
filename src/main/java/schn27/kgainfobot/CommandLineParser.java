@@ -56,6 +56,7 @@ public class CommandLineParser {
         request.themeId = Integer.parseInt(args.getOrDefault("theme", "0"));
         request.desiredTime = new Time(args.getOrDefault("time", "10:00"));
         request.comment = args.getOrDefault("comment", "-");
+		request.timeout = Integer.parseInt(args.getOrDefault("timeout", "10"));
         return request;
     }
     
@@ -70,8 +71,22 @@ public class CommandLineParser {
             if (split.length == 2)
                 res.put(split[0].toLowerCase(), split[1]);
         }
+		
+		if (res.isEmpty())
+			printUsage();
+		
         return res;
     }
+	
+	private void printUsage() {
+		System.out.println("Usage: java -jar kgainfobot.jar login=<login> pass=<password> cmd=<command> [parameters]");
+		System.out.println("Required parameter list for command:");
+		System.out.println("  register: structure=<structure_code> department=<department_code> theme=<theme_id> time=<desired_time> comment=<any_text>");
+		System.out.println("  getstructures: no parameter is required");
+		System.out.println("  getdepartments: code=<structure_code>");
+		System.out.println("  getthemes: code=<department_code>");
+		System.out.println("Example: ");
+	}
 
-    private Map<String, String> args;
+    private final Map<String, String> args;
 }

@@ -32,7 +32,8 @@ import schn27.kgainfobot.data.Theme;
 public class Main {
 
 	public static void main(String[] args) throws IOException, UnirestException {
-        setShutdownHook(true);
+        int exitCode = 0;
+		setShutdownHook(true);
         
         CommandLineParser cmdParser = new CommandLineParser(args);
 
@@ -40,7 +41,7 @@ public class Main {
 		if (session.login(cmdParser.getLogin(), cmdParser.getPass())) {      // "H6Pu9bp", "NawVUVi"
 			switch (cmdParser.getCommand()) {
                 case CommandLineParser.REGISTER:
-                    doRegister(session, cmdParser.getRegisterRequest());
+                    exitCode = doRegister(session, cmdParser.getRegisterRequest()) ? 0 : -1;
                     break;
                 case CommandLineParser.GET_STRUCTURE_LIST:
                     doGetStructureList(session);
@@ -53,44 +54,40 @@ public class Main {
                     break;
                 default:
                     System.err.println("Unknown command");
+					exitCode = -1;
             }
-		} else
+		} else {
 			System.err.println("Login failed");
+			exitCode = -1;
+		}
 
 		Unirest.shutdown();
 		setShutdownHook(false);
+		System.exit(exitCode);
 	}
    
-    private static void doRegister(Session session, RegistrationRequest request) {
-/*        request.structureCode = 811000;
-        request.departmentCode = 811032;
-        request.themeId = 1;
-        request.desiredTime = new Time("11:32");
-        request.comment = "123";
-        request.timeout = 60;*/
+    private static boolean doRegister(Session session, RegistrationRequest request) {
         boolean res = session.register(request);
         System.out.println("register result = " + res);
+		return res;
     }
     
     private static void doGetStructureList(Session session) {
         List<Structure> list = session.getStructureList();
-        for (Structure s : list) {
+        for (Structure s : list)
             System.out.println(s.code + " " + s.name);
-        }
     }
 
     private static void doGetDepartmentList(Session session, int code) throws UnirestException {
         List<Department> list = session.getDepartmentList(Integer.toString(code));
-        for (Department d : list) {
+        for (Department d : list)
             System.out.println(d.code + " " + d.id + " " + d.name + " " + d.position);
-        }
     }
 
     private static void doGetThemeList(Session session, int code) throws UnirestException {
         List<Theme> list = session.getThemeList(Integer.toString(code));
-        for (Theme t : list) {
+        for (Theme t : list)
             System.out.println(t.id + " " + t.name);
-        }
     }
     
 	private static void setShutdownHook(boolean set) {

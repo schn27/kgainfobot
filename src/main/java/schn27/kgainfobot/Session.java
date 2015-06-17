@@ -135,7 +135,7 @@ public class Session {
 			String captchaHash = getCaptchaHash(doc);
 
 			List<String> dateList = getDateList(request.departmentCode);
-			if (!dateList.isEmpty()) {
+			if (!dateList.isEmpty() && !dateList.get(0).isEmpty()) {
 				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime, request.timeout);
 				if (time.isValid()) {
 					response = Unirest.post(registrationURL)
