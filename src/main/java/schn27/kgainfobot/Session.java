@@ -79,20 +79,22 @@ public class Session {
 			Document doc = Jsoup.parse(response.getBody());
 
 			Elements tags = doc.getElementsByTag("select");
-			for (Element tag : tags)
+			for (Element tag : tags) {
 				if (tag.attr("name").equals("structure_code")) {
 					Elements options = tag.children();
-					for (Element option : options)
+					for (Element option : options) {
 						if (!option.attr("label").isEmpty())
 							list.add(new Structure(option.attr("value"), option.attr("label")));
+					}
 				}
+			}
 		} catch (UnirestException ex) {
 			Logger.getLogger(Session.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		return list;
 	}
-	
+
 	public List<Department> getDepartmentList(String code) throws UnirestException {
 		List<Department> list = new ArrayList<>();
 
@@ -108,7 +110,7 @@ public class Session {
 
 		return list;
 	}
-	
+
 	public List<Theme> getThemeList(String code) throws UnirestException {
 		List<Theme> list = new ArrayList<>();
 
@@ -117,15 +119,16 @@ public class Session {
 				.asJson();
 
 		JSONArray array = response.getBody().getObject().optJSONArray("info");
-		if (array != null)
+		if (array != null) {
 			for (int i = 0; i < array.length(); ++i) {
 				JSONObject o = array.getJSONObject(i);
 				list.add(new Theme(o.getString("id"), o.getString("name")));
 			}
+		}
 
 		return list;
 	}
-	
+
 	public boolean register(RegistrationRequest request) {
 		boolean result = false;
 
@@ -134,9 +137,10 @@ public class Session {
 			Document doc = Jsoup.parse(response.getBody());
 			String captchaHash = getCaptchaHash(doc);
 
-			List<String> dateList = getDateList(request.departmentCode);
+			List<String> dateList = waitForDateList(request.departmentCode, request.timeout);
 			if (!dateList.isEmpty() && !dateList.get(0).isEmpty()) {
-				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime, request.timeout);
+				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime);
+				
 				if (time.isValid()) {
 					response = Unirest.post(registrationURL)
 							.header("Accept-encoding", "identity")
@@ -170,35 +174,61 @@ public class Session {
 		return result;
 	}
 
-	private Time getClosestTime(int code, String date, Time desiredTime, int timeout) throws UnirestException {
-		Time res = Time.getInvalid();
-        
-        long startTime = System.currentTimeMillis();
-        
-        while (!res.isValid() && (System.currentTimeMillis() - startTime < timeout * 1000)) {
-            List<Time> timeList = getTimeList(code, date);
+	private List<String> waitForDateList(int code, int timeout) throws UnirestException {
+		long startTime = System.currentTimeMillis();
 
-            if (!timeList.isEmpty()) {
-                res = timeList.get(0);
-                int delta = Math.abs(desiredTime.value - res.value);
-                for (int i = 1; i < timeList.size(); ++i) {
-                    int newDelta = Math.abs(desiredTime.value - timeList.get(i).value);
-                    if (newDelta >= delta)
-                        break;
-                    else {
-                        res = timeList.get(i);
-                        delta = newDelta;
-                    }
-                }
-            } else {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                }
-            }
-        }
+		while (System.currentTimeMillis() - startTime < timeout * 1000) {
+			List<String> list = getDateList(code);
 
-		return res;
+			if (!list.isEmpty() && !list.get(0).isEmpty())
+				return list;
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex) {
+			}
+		}
+
+		return new ArrayList<>();
+	}
+	
+	private Time waitForClosestTime(int code, String date, Time desiredTime, int timeout) throws UnirestException {
+		long startTime = System.currentTimeMillis();
+
+		while (System.currentTimeMillis() - startTime < timeout * 1000) {
+			Time time = getClosestTime(code, date, desiredTime);
+
+			if (time.isValid())
+				return time;
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex) {
+			}
+		}
+
+		return Time.getInvalid();		
+	}
+
+	private Time getClosestTime(int code, String date, Time desiredTime) throws UnirestException {
+		List<Time> timeList = getTimeList(code, date);
+
+		if (timeList.isEmpty())
+			return Time.getInvalid();
+		
+		Time time = timeList.get(0);
+		int delta = Math.abs(desiredTime.value - time.value);
+		for (int i = 1; i < timeList.size(); ++i) {
+			int newDelta = Math.abs(desiredTime.value - timeList.get(i).value);
+			if (newDelta >= delta) {
+				break;
+			} else {
+				time = timeList.get(i);
+				delta = newDelta;
+			}
+		}
+
+		return time;
 	}
 
 	private List<String> getDateList(int code) throws UnirestException {
@@ -211,10 +241,10 @@ public class Session {
 		JSONArray array = response.getBody().getArray();
 		for (int i = 0; i < array.length(); ++i)
 			list.add(array.getString(i));
-
+		
 		return list;
 	}
-	
+
 	private List<Time> getTimeList(int code, String date) throws UnirestException {
 		List<Time> list = new ArrayList<>();
 
@@ -228,17 +258,18 @@ public class Session {
 
 		return list;
 	}
-	
+
 	private String getCaptchaHash(Document doc) {
 		Elements tags = doc.getElementsByTag("input");
-		for (Element tag : tags)
+		for (Element tag : tags) {
 			if (tag.attr("name").equals("captcha_md5"))
 				return tag.attr("value");
+		}
 		return "";
 	}
 
 	private final CaptchaMd5Decoder uncaptcha;
-	
+
 	private final static String host = "http://priem.kgainfo.spb.ru";
 	private final static String loginURL = host + "/login";
 	private final static String registrationURL = host + "/user/requests";
