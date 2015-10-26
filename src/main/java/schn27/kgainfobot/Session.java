@@ -192,24 +192,6 @@ public class Session {
 		return new ArrayList<>();
 	}
 	
-	private Time waitForClosestTime(int code, String date, Time desiredTime, int timeout) throws UnirestException {
-		long startTime = System.currentTimeMillis();
-
-		while (System.currentTimeMillis() - startTime < timeout * 1000) {
-			Time time = getClosestTime(code, date, desiredTime);
-
-			if (time.isValid())
-				return time;
-
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException ex) {
-			}
-		}
-
-		return Time.getInvalid();		
-	}
-
 	private Time getClosestTime(int code, String date, Time desiredTime) throws UnirestException {
 		List<Time> timeList = getTimeList(code, date);
 

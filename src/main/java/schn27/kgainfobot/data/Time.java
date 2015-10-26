@@ -17,7 +17,9 @@
 package schn27.kgainfobot.data;
 
 /**
- *
+ * Immutable container for time info.
+ * Can contain invalid value for special cases.
+ * 
  * @author amalikov
  */
 public final class Time {
@@ -46,7 +48,7 @@ public final class Time {
 		return String.format("%02d:%02d", value / 60, value % 60);
 	}
 
-	public final int value;
+	public final int value;		///< time in minutes of the day
 
 	private Time() {
 		value = INVALID_VALUE;

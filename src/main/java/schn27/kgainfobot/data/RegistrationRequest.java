@@ -17,25 +17,23 @@
 package schn27.kgainfobot.data;
 
 /**
- *
+ * Container of request info.
+ * 
  * @author amalikov
  */
 public class RegistrationRequest {
     
     public RegistrationRequest() {
-        structureCode = 0;
-        departmentCode = 0;
-        themeId = 0;
         desiredTime = new Time("10:00");
-        comment = "";
+        comment = "...";
         timeout = 60;
     }
 
-	public int structureCode;
-	public int departmentCode;
-	public int themeId;
-	public String themeName;
-	public Time desiredTime;
-	public String comment;
-    public int timeout;
+	public int structureCode;	///< structure code (f.e. 812000)
+	public int departmentCode;	///< department code (f.e. 812003)
+	public int themeId;			///< theme id (f.e. 11)
+	public String themeName;	///< human readable theme name in Russian (probably obsolete) (f.e. "Согласование проектов в ОПС")
+	public Time desiredTime;	///< desired time of registration (f.e. Time("10:00"))
+	public String comment;		///< human readable comment (f.e. "...")
+    public int timeout;			///< timeout of request processing in seconds (f.e. 60)
 }

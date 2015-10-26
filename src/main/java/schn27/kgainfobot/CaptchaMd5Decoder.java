@@ -25,7 +25,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Kgainfo captcha 'decoder' based on:
+ *   1. kgainfo server transmits MD5 hash of the right answer to captcha
+ *   2. the right answer to captcha is a 4 letters string representing a number in the range of 0-9999
+ * So this class just decodes a string from MD5 hash with brut force.
+ * 
  * @author amalikov
  */
 public class CaptchaMd5Decoder {

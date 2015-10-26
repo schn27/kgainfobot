@@ -17,7 +17,11 @@
 package schn27.kgainfobot.data;
 
 /**
- *
+ * Immutable container of department info.
+ * Department is referenced by its numerical code (the field 'code').
+ * Fields 'name' and 'position' are used only for UI.
+ * The field 'id' is useless.
+ * 
  * @author amalikov
  */
 public final class Department {
@@ -33,8 +37,8 @@ public final class Department {
 		this(Integer.parseInt(id), Integer.parseInt(code), name, position);
 	}
 
-	public final int id;
-	public final int code;
-	public final String name;
-	public final String position;
+	public final int id;			///< useless id of the department
+	public final int code;			///< code of the department
+	public final String name;		///< human readable name in Russian of the department
+	public final String position;	///< human readable additional description in Russian of the department
 }

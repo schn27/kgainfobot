@@ -17,7 +17,9 @@
 package schn27.kgainfobot.data;
 
 /**
- *
+ * Immutable container for theme.
+ * Probably only 'id' has the meaning, 'name' is ignored by the 'kgainfo' server
+ * 
  * @author amalikov
  */
 public final class Theme {

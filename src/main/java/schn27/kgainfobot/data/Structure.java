@@ -17,7 +17,10 @@
 package schn27.kgainfobot.data;
 
 /**
- *
+ * Immutable container of structure info.
+ * Each structure is referenced by its numeric code (the field 'code').
+ * The field 'name' is used only for UI.
+ * 
  * @author amalikov
  */
 public final class Structure {
@@ -31,6 +34,6 @@ public final class Structure {
 		this(Integer.parseInt(code), name);
 	}
 
-	public final int code;
-	public final String name;
+	public final int code;		///< code of the structure (f.e. 812000)
+	public final String name;	///< human readable name of the structure in Russian (f.e. "Отдел подземных сооружений КГА")
 }
