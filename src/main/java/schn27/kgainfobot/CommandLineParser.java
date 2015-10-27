@@ -33,6 +33,7 @@ public class CommandLineParser {
     public static final int GET_STRUCTURE_LIST = 1;
     public static final int GET_DEPARTMENT_LIST = 2;
     public static final int GET_THEME_LIST = 3;
+	public static final int CREATE_INFO_FILE = 4;
     
     public CommandLineParser(String[] args) {
         this.args = parse(args);
@@ -48,6 +49,8 @@ public class CommandLineParser {
                 return GET_DEPARTMENT_LIST;
             case "getthemes":
                 return GET_THEME_LIST;
+			case "infofile":
+				return CREATE_INFO_FILE;
             default:
                 return INVALID_COMMAND;
         }
@@ -75,6 +78,10 @@ public class CommandLineParser {
     public int getCode() {
         return Integer.parseInt(args.getOrDefault("code", "0"));
     }
+	
+	public String getFileName() {
+		return args.getOrDefault("file", "kgainfo.xml");
+	}
 
     private Map<String, String> parse(String[] args) {
         Map<String, String> res = new HashMap<>();
@@ -97,6 +104,7 @@ public class CommandLineParser {
 		System.out.println("  getstructures: no parameter is required");
 		System.out.println("  getdepartments: code=<structure_code>");
 		System.out.println("  getthemes: code=<department_code>");
+		System.out.println("  infofile: file=<file_name>");
 		System.out.println("Example: java -jar kgainfobot-1.0-exe.jar login=H6Pu9bp pass=NawVUVi cmd=register structure=812000 department=812003 theme=11 time=11:30 comment=\"...\" timeout=60");
 	}
 

@@ -36,6 +36,11 @@ public final class Department {
 	public Department(String id, String code, String name, String position) {
 		this(Integer.parseInt(id), Integer.parseInt(code), name, position);
 	}
+	
+	@Override
+	public String toString() {
+		return name + "(" + position + ")";
+	}
 
 	public final int id;			///< useless id of the department
 	public final int code;			///< code of the department

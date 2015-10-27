@@ -32,6 +32,11 @@ public final class Theme {
 	public Theme(String id, String name) {
 		this(Integer.parseInt(id), name);
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	public final int id;
 	public final String name;

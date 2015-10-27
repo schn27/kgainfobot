@@ -21,9 +21,13 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import schn27.kgainfobot.data.Department;
+import schn27.kgainfobot.data.Info;
 import schn27.kgainfobot.data.Structure;
 import schn27.kgainfobot.data.Theme;
+import schn27.kgainfobot.ui.MainFrame;
 
 /**
  *
@@ -32,7 +36,8 @@ import schn27.kgainfobot.data.Theme;
 public class Main {
 
 	public static void main(String[] args) throws IOException, UnirestException {
-        int exitCode = 0;
+		MainFrame.createAndShow();
+    /*    int exitCode = 0;
 		setShutdownHook(true);
         
         CommandLineParser cmdParser = new CommandLineParser(args);
@@ -52,6 +57,9 @@ public class Main {
                 case CommandLineParser.GET_THEME_LIST:
                     doGetThemeList(session, cmdParser.getCode());
                     break;
+				case CommandLineParser.CREATE_INFO_FILE:
+					doCreateInfoFile(session, cmdParser.getFileName());
+					break;
                 default:
                     System.err.println("Unknown command");
 					exitCode = -1;
@@ -63,7 +71,7 @@ public class Main {
 
 		Unirest.shutdown();
 		setShutdownHook(false);
-		System.exit(exitCode);
+		System.exit(exitCode);*/
 	}
    
     private static boolean doRegister(Session session, RegistrationRequest request) {
@@ -89,7 +97,26 @@ public class Main {
         for (Theme t : list)
             System.out.println(t.id + " " + t.name);
     }
-    
+
+	private static void doCreateInfoFile(Session session, String fileName) throws UnirestException {
+		Info info = new Info();
+		
+		List<Structure> structures = session.getStructureList();
+		info.addStructures(structures);
+		
+		for (Structure s : structures) {
+			List<Department> departments = session.getDepartmentList(Integer.toString(s.code));
+			info.addDepartments(s.code, departments);
+			
+			for (Department d : departments) {
+				List<Theme> themes = session.getThemeList(Integer.toString(d.code));
+				info.addThemes(s.code, d.code, themes);
+			}
+		}		
+		
+		info.saveToFile(fileName);
+	}	
+	
 	private static void setShutdownHook(boolean set) {
 		if (hook == null)
 			hook = new Thread() {

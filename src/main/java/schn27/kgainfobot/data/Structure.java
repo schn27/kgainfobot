@@ -33,6 +33,11 @@ public final class Structure {
 	public Structure(String code, String name) {
 		this(Integer.parseInt(code), name);
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	public final int code;		///< code of the structure (f.e. 812000)
 	public final String name;	///< human readable name of the structure in Russian (f.e. "Отдел подземных сооружений КГА")
