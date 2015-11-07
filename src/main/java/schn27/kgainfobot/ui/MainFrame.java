@@ -60,29 +60,6 @@ public class MainFrame extends javax.swing.JFrame {
 	private void initInfo() {
 		info = new Info();
 		info.loadFromFile("./kgainfo.xml");
-		initStructures();
-	}
-	
-	private void initStructures() {
-		cmbStructure.removeAllItems();
-		for (Structure s : info.getStructures())
-			cmbStructure.addItem(s);
-	}
-	
-	private void initDepartments(Structure structure) {
-		cmbDepartment.removeAllItems();
-		if (structure != null) {
-			for (Department d : info.getDepartments(structure.code))
-				cmbDepartment.addItem(d);
-		}
-	}
-
-	private void initThemes(Structure structure, Department department) {
-		cmbTheme.removeAllItems();
-		if (structure != null && department != null) {
-			for (Theme t : info.getThemes(structure.code, department.code))
-				cmbTheme.addItem(t);
-		}
 	}	
 	
 	/**
@@ -93,63 +70,23 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        cmbStructure = new javax.swing.JComboBox();
-        cmbDepartment = new javax.swing.JComboBox();
-        cmbTheme = new javax.swing.JComboBox();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        cmbStructure.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbStructureActionPerformed(evt);
-            }
-        });
-
-        cmbDepartment.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbDepartmentActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cmbStructure, 0, 380, Short.MAX_VALUE)
-                    .addComponent(cmbDepartment, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cmbTheme, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+            .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cmbStructure, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbDepartment, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cmbTheme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(217, Short.MAX_VALUE))
+            .addGap(0, 300, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void cmbStructureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStructureActionPerformed
-        initDepartments((Structure)cmbStructure.getSelectedItem());
-    }//GEN-LAST:event_cmbStructureActionPerformed
-
-    private void cmbDepartmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbDepartmentActionPerformed
-        initThemes((Structure)cmbStructure.getSelectedItem(), (Department)cmbDepartment.getSelectedItem());
-    }//GEN-LAST:event_cmbDepartmentActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox cmbDepartment;
-    private javax.swing.JComboBox cmbStructure;
-    private javax.swing.JComboBox cmbTheme;
     // End of variables declaration//GEN-END:variables
 
 	private Info info;
