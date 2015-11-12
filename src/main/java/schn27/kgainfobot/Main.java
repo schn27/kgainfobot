@@ -99,7 +99,7 @@ public class Main {
     }
 
 	private static void doCreateInfoFile(Session session, String fileName) throws UnirestException {
-		Info info = new Info();
+		Info info = new Info(fileName);
 		
 		List<Structure> structures = session.getStructureList();
 		info.addStructures(structures);
@@ -114,7 +114,7 @@ public class Main {
 			}
 		}		
 		
-		info.saveToFile(fileName);
+		info.saveToFile();
 	}	
 	
 	private static void setShutdownHook(boolean set) {

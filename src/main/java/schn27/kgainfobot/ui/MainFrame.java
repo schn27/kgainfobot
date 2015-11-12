@@ -16,10 +16,13 @@
  */
 package schn27.kgainfobot.ui;
 
-import schn27.kgainfobot.data.Department;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import schn27.kgainfobot.data.Account;
+import schn27.kgainfobot.data.AccountsManager;
 import schn27.kgainfobot.data.Info;
-import schn27.kgainfobot.data.Structure;
-import schn27.kgainfobot.data.Theme;
+import schn27.kgainfobot.data.Schedule;
 
 /**
  *
@@ -50,14 +53,61 @@ public class MainFrame extends javax.swing.JFrame {
 	 * Creates new form MainFrame
 	 */
 	private MainFrame() {
+		initAccounts();
 		initComponents();
+		initSchedule();
 		initInfo();
 	}
 	
+	private void initAccounts() {
+		accountsManager = new AccountsManager("./accounts.xml");
+		accountsManager.loadFromFile();
+	}
+	
+	private void initSchedule() {
+		schedule = new Schedule("./schedule.xml");
+		schedule.loadFromFile();
+		
+		txtStartTime.setText(schedule.getStartTime().toString());
+		txtStartTime.addActionListener(this::scheduleActionPerformed);
+		
+		txtEndTime.setText(schedule.getEndTime().toString());
+		txtEndTime.addActionListener(this::scheduleActionPerformed);
+		
+		boolean[] weekDays = schedule.getWeekDays();
+		chkWeekDay1.setSelected(weekDays[0]);
+		chkWeekDay1.addActionListener(this::scheduleActionPerformed);
+		chkWeekDay2.setSelected(weekDays[1]);
+		chkWeekDay2.addActionListener(this::scheduleActionPerformed);
+		chkWeekDay3.setSelected(weekDays[2]);
+		chkWeekDay3.addActionListener(this::scheduleActionPerformed);
+		chkWeekDay4.setSelected(weekDays[3]);
+		chkWeekDay4.addActionListener(this::scheduleActionPerformed);
+		chkWeekDay5.setSelected(weekDays[4]);
+		chkWeekDay5.addActionListener(this::scheduleActionPerformed);
+	}
+	
 	private void initInfo() {
-		info = new Info();
-		info.loadFromFile("./kgainfo.xml");
+		info = new Info("./kgainfo.xml");
+		info.loadFromFile();
+	}
+	
+	private TableModel getAccountsTableModel() {
+		return new AccountsTableModel(accountsManager);
 	}	
+
+    private void scheduleActionPerformed(java.awt.event.ActionEvent evt) {
+		schedule.setAll(
+				txtStartTime.getText(), 
+				txtEndTime.getText(), 
+				new boolean[]{
+					chkWeekDay1.isSelected(),
+					chkWeekDay2.isSelected(),
+					chkWeekDay3.isSelected(),
+					chkWeekDay4.isSelected(),
+					chkWeekDay5.isSelected(),
+				});
+    }
 	
 	/**
 	 * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
@@ -67,37 +117,70 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popupMenu = new javax.swing.JPopupMenu();
+        javax.swing.JMenuItem addAccount = new javax.swing.JMenuItem();
+        removeAccount = new javax.swing.JMenuItem();
         javax.swing.JTabbedPane jTabbedPane1 = new javax.swing.JTabbedPane();
         javax.swing.JPanel jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
         tblAccounts = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
+        javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
+        txtStartTime = new javax.swing.JFormattedTextField();
+        javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
+        txtEndTime = new javax.swing.JFormattedTextField();
+        chkWeekDay1 = new javax.swing.JCheckBox();
+        chkWeekDay2 = new javax.swing.JCheckBox();
+        chkWeekDay3 = new javax.swing.JCheckBox();
+        chkWeekDay4 = new javax.swing.JCheckBox();
+        chkWeekDay5 = new javax.swing.JCheckBox();
         btnGetInfo = new javax.swing.JButton();
         txtGetInfoStatus = new javax.swing.JTextField();
         javax.swing.JPanel jPanel2 = new javax.swing.JPanel();
         javax.swing.JScrollPane jScrollPane2 = new javax.swing.JScrollPane();
         tblTasks = new javax.swing.JTable();
 
+        popupMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+            public void popupMenuCanceled(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent evt) {
+            }
+            public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {
+                popupMenuPopupMenuWillBecomeVisible(evt);
+            }
+        });
+
+        addAccount.setText("Add");
+        addAccount.setToolTipText("");
+        addAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addAccountActionPerformed(evt);
+            }
+        });
+        popupMenu.add(addAccount);
+
+        removeAccount.setText("Delete");
+        removeAccount.setToolTipText("");
+        removeAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeAccountActionPerformed(evt);
+            }
+        });
+        popupMenu.add(removeAccount);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("KgaInfo bot");
+        setLocationByPlatform(true);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Accounts"));
 
-        tblAccounts.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Name", "Login", "Password"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+        tblAccounts.setModel(getAccountsTableModel());
+        tblAccounts.setComponentPopupMenu(popupMenu);
+        tblAccounts.setFillsViewportHeight(true);
+        tblAccounts.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tblAccountsMousePressed(evt);
             }
         });
         jScrollPane1.setViewportView(tblAccounts);
@@ -106,7 +189,7 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -115,15 +198,70 @@ public class MainFrame extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Schedule"));
 
+        jLabel1.setText("Start time");
+
+        txtStartTime.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("h:mm"))));
+
+        jLabel2.setText("End time");
+
+        txtEndTime.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("h:mm"))));
+
+        chkWeekDay1.setText("Monday");
+
+        chkWeekDay2.setText("Tuesday");
+
+        chkWeekDay3.setText("Wednesday");
+
+        chkWeekDay4.setText("Thursday");
+
+        chkWeekDay5.setText("Friday");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 233, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtStartTime)
+                            .addComponent(txtEndTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(chkWeekDay1)
+                            .addComponent(chkWeekDay2)
+                            .addComponent(chkWeekDay3)
+                            .addComponent(chkWeekDay4)
+                            .addComponent(chkWeekDay5))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 294, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(chkWeekDay1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chkWeekDay2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chkWeekDay3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chkWeekDay4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chkWeekDay5)
+                .addGap(0, 115, Short.MAX_VALUE))
         );
 
         btnGetInfo.setText("Get info");
@@ -139,12 +277,12 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(btnGetInfo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtGetInfoStatus)))
-                .addContainerGap(106, Short.MAX_VALUE))
+                        .addComponent(txtGetInfoStatus))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(138, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -205,14 +343,50 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void tblAccountsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAccountsMousePressed
+		// selects the row at which point the mouse is clicked
+        int currentRow = tblAccounts.rowAtPoint(evt.getPoint());
+		if (currentRow >= 0)
+			tblAccounts.setRowSelectionInterval(currentRow, currentRow);
+    }//GEN-LAST:event_tblAccountsMousePressed
+
+    private void addAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAccountActionPerformed
+        AccountsTableModel m = (AccountsTableModel)tblAccounts.getModel();
+		m.addRow(new Account("noname", "", ""));
+    }//GEN-LAST:event_addAccountActionPerformed
+
+    private void removeAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAccountActionPerformed
+        int row = tblAccounts.getSelectedRow();
+		if (row >= 0) {
+			AccountsTableModel m = (AccountsTableModel)tblAccounts.getModel();
+			m.removeRow(row);
+		}
+    }//GEN-LAST:event_removeAccountActionPerformed
+
+    private void popupMenuPopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_popupMenuPopupMenuWillBecomeVisible
+        int row = tblAccounts.getSelectedRow();
+		removeAccount.setVisible(row >= 0);
+    }//GEN-LAST:event_popupMenuPopupMenuWillBecomeVisible
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGetInfo;
+    private javax.swing.JCheckBox chkWeekDay1;
+    private javax.swing.JCheckBox chkWeekDay2;
+    private javax.swing.JCheckBox chkWeekDay3;
+    private javax.swing.JCheckBox chkWeekDay4;
+    private javax.swing.JCheckBox chkWeekDay5;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPopupMenu popupMenu;
+    private javax.swing.JMenuItem removeAccount;
     private javax.swing.JTable tblAccounts;
     private javax.swing.JTable tblTasks;
+    private javax.swing.JFormattedTextField txtEndTime;
     private javax.swing.JTextField txtGetInfoStatus;
+    private javax.swing.JFormattedTextField txtStartTime;
     // End of variables declaration//GEN-END:variables
 
+	private AccountsManager accountsManager;
+	private Schedule schedule;
 	private Info info;
 }

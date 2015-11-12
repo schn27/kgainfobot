@@ -17,6 +17,7 @@
 package schn27.kgainfobot.data;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -55,7 +56,8 @@ import org.xml.sax.SAXException;
  */
 public final class Info {
 
-	public Info() {
+	public Info(String fileName) {
+		this.fileName = fileName;
 		structures = new HashMap<>();
 	}
 	
@@ -121,21 +123,21 @@ public final class Info {
 			addTheme(structureCode, departmentCode, t);
 	}	
 	
-	public void loadFromFile(String filename) {
-		try (Reader file = new InputStreamReader(new FileInputStream(filename), "UTF-8")) {
+	public void loadFromFile() {
+		try (Reader file = new InputStreamReader(new FileInputStream(fileName), "UTF-8")) {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();		
 			Document doc = db.parse(new InputSource(file));
 			Element root = doc.getDocumentElement();
-			
 			loadStructures(root);
+		} catch (FileNotFoundException ex) {
 		} catch (ParserConfigurationException | SAXException | IOException ex) {
 			Logger.getLogger(Info.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 	
-	public void saveToFile(String filename) {
-		try (Writer file = new OutputStreamWriter(new FileOutputStream(filename, false), "UTF-8")) {
+	public void saveToFile() {
+		try (Writer file = new OutputStreamWriter(new FileOutputStream(fileName, false), "UTF-8")) {
 			StreamResult streamResult = new StreamResult(file);
 			TransformerFactory tf = TransformerFactory.newInstance();
 			tf.setAttribute("indent-number", 4); 
@@ -247,5 +249,6 @@ public final class Info {
 		public final List<Theme> themes;
 	}
 	
+	private final String fileName;
 	private final Map<Integer, StructureEntry> structures;
 }
