@@ -16,6 +16,9 @@
  */
 package schn27.kgainfobot.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -70,9 +73,29 @@ public class MainFrame extends javax.swing.JFrame {
 		
 		txtStartTime.setText(schedule.getStartTime().toString());
 		txtStartTime.addActionListener(this::scheduleActionPerformed);
+		txtStartTime.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent fe) {
+			}
+
+			@Override
+			public void focusLost(FocusEvent fe) {
+				scheduleActionPerformed(new ActionEvent(this, 0, ""));	// fake action event
+			}
+		});
 		
 		txtEndTime.setText(schedule.getEndTime().toString());
 		txtEndTime.addActionListener(this::scheduleActionPerformed);
+		txtEndTime.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent fe) {
+			}
+
+			@Override
+			public void focusLost(FocusEvent fe) {
+				scheduleActionPerformed(new ActionEvent(this, 0, ""));	// fake action event
+			}
+		});		
 		
 		boolean[] weekDays = schedule.getWeekDays();
 		chkWeekDay1.setSelected(weekDays[0]);

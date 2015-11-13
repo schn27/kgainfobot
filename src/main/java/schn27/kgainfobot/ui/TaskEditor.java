@@ -29,9 +29,6 @@ import schn27.kgainfobot.data.Theme;
  */
 public class TaskEditor extends javax.swing.JFrame {
 
-	/**
-	 * Creates new form TaskEditor
-	 */
 	public TaskEditor(List<Account> accounts, Info info) {
 		this.accounts = accounts;
 		this.info = info;
