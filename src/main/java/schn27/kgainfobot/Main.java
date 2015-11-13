@@ -21,8 +21,6 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import schn27.kgainfobot.data.Department;
 import schn27.kgainfobot.data.Info;
 import schn27.kgainfobot.data.Structure;
@@ -37,10 +35,10 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, UnirestException {
 		MainFrame.createAndShow();
-    /*    int exitCode = 0;
 		setShutdownHook(true);
         
-        CommandLineParser cmdParser = new CommandLineParser(args);
+/*      int exitCode = 0;  
+		CommandLineParser cmdParser = new CommandLineParser(args);
 
 		Session session = new Session();
 		if (session.login(cmdParser.getLogin(), cmdParser.getPass())) {      // "H6Pu9bp", "NawVUVi"

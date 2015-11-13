@@ -101,10 +101,18 @@ public class AccountsTableModel extends AbstractTableModel {
 		accountsManager.add(account);
 		fireTableChanged(new TableModelEvent(this));
 	}
+
+	public void addRow() {
+		addRow(new Account("noname", "", ""));
+	}	
 	
 	public void removeRow(int row) {
 		accountsManager.remove(row);
 		fireTableChanged(new TableModelEvent(this));
+	}
+	
+	public Account getAccount(int row) {
+		return accountsManager.get(row);
 	}
 	
 	private final AccountsManager accountsManager;

@@ -102,6 +102,10 @@ public final class Info {
 			addTheme(structureCode, departmentCode, t);
 	}	
 	
+	public void clear() {
+		structures = new HashMap<>();
+	}
+	
 	public void loadFromFile() {
 		XmlLoader.load(fileName, (Document doc) -> loadStructures(doc.getDocumentElement()));
 	}
@@ -199,5 +203,5 @@ public final class Info {
 	}
 	
 	private final String fileName;
-	private final Map<Integer, StructureEntry> structures;
+	private Map<Integer, StructureEntry> structures;
 }

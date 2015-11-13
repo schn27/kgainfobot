@@ -16,16 +16,22 @@
  */
 package schn27.kgainfobot.ui;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import javax.swing.table.TableModel;
+import schn27.kgainfobot.Session;
 import schn27.kgainfobot.data.Account;
 import schn27.kgainfobot.data.AccountsManager;
+import schn27.kgainfobot.data.Department;
 import schn27.kgainfobot.data.Info;
 import schn27.kgainfobot.data.Schedule;
+import schn27.kgainfobot.data.Structure;
+import schn27.kgainfobot.data.Theme;
 
 /**
  *
@@ -33,6 +39,10 @@ import schn27.kgainfobot.data.Schedule;
  */
 public class MainFrame extends javax.swing.JFrame {
 
+	private static final String AccountsFileName = "./accounts.xml";
+	private static final String ScheduleFileName = "./schedule.xml";
+	private static final String InfoFileName = "./kgainfo.xml";
+	
 	public static void createAndShow() {
 		try {
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -45,16 +55,9 @@ public class MainFrame extends javax.swing.JFrame {
 			java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 		}
 
-		/* Create and display the form */
-		java.awt.EventQueue.invokeLater(() -> {
-			new MainFrame().setVisible(true);
-		});
+		java.awt.EventQueue.invokeLater(() -> new MainFrame().setVisible(true));
 	}
 	
-	
-	/**
-	 * Creates new form MainFrame
-	 */
 	private MainFrame() {
 		initAccounts();
 		initComponents();
@@ -63,12 +66,12 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	private void initAccounts() {
-		accountsManager = new AccountsManager("./accounts.xml");
+		accountsManager = new AccountsManager(AccountsFileName);
 		accountsManager.loadFromFile();
 	}
 	
 	private void initSchedule() {
-		schedule = new Schedule("./schedule.xml");
+		schedule = new Schedule(ScheduleFileName);
 		schedule.loadFromFile();
 		
 		txtStartTime.setText(schedule.getStartTime().toString());
@@ -111,7 +114,7 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	private void initInfo() {
-		info = new Info("./kgainfo.xml");
+		info = new Info(InfoFileName);
 		info.loadFromFile();
 	}
 	
@@ -288,6 +291,11 @@ public class MainFrame extends javax.swing.JFrame {
         );
 
         btnGetInfo.setText("Get info");
+        btnGetInfo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGetInfoActionPerformed(evt);
+            }
+        });
 
         txtGetInfoStatus.setEditable(false);
         txtGetInfoStatus.setToolTipText("");
@@ -374,22 +382,75 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_tblAccountsMousePressed
 
     private void addAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAccountActionPerformed
-        AccountsTableModel m = (AccountsTableModel)tblAccounts.getModel();
-		m.addRow(new Account("noname", "", ""));
+        ((AccountsTableModel)tblAccounts.getModel()).addRow();
     }//GEN-LAST:event_addAccountActionPerformed
 
     private void removeAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAccountActionPerformed
         int row = tblAccounts.getSelectedRow();
-		if (row >= 0) {
-			AccountsTableModel m = (AccountsTableModel)tblAccounts.getModel();
-			m.removeRow(row);
-		}
+		if (row >= 0)
+			((AccountsTableModel)tblAccounts.getModel()).removeRow(row);
     }//GEN-LAST:event_removeAccountActionPerformed
 
     private void popupMenuPopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_popupMenuPopupMenuWillBecomeVisible
         int row = tblAccounts.getSelectedRow();
 		removeAccount.setVisible(row >= 0);
     }//GEN-LAST:event_popupMenuPopupMenuWillBecomeVisible
+
+    private void btnGetInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetInfoActionPerformed
+		if (tblAccounts.getRowCount() <= 0) {
+			JOptionPane.showMessageDialog(this, "No account yet!");
+			return;
+		}
+		
+		final Account account = ((AccountsTableModel)tblAccounts.getModel()).getAccount(tblAccounts.getSelectedRow());
+		
+		btnGetInfo.setEnabled(false);
+		txtGetInfoStatus.setText("in progress");
+	
+		SwingWorker<Info, Void> worker = new SwingWorker<Info, Void>() {
+		
+			@Override
+			public Info doInBackground() throws Exception {
+				Info info = new Info(InfoFileName);
+				Session session = new Session();
+				
+				try {
+					if (session.login(account.login, account.password)) {
+						List<Structure> structures = session.getStructureList();
+						info.addStructures(structures);
+
+						for (Structure s : structures) {
+							List<Department> departments = session.getDepartmentList(Integer.toString(s.code));
+							info.addDepartments(s.code, departments);
+
+							for (Department d : departments) {
+								List<Theme> themes = session.getThemeList(Integer.toString(d.code));
+								info.addThemes(s.code, d.code, themes);
+							}
+						}		
+
+						info.saveToFile();
+					} else {
+						resultString = "login failed";
+					}
+				} catch (UnirestException ex) {
+					resultString = "network failed";
+				}
+				
+				return info;
+			}
+
+			@Override
+			public void done() {
+				btnGetInfo.setEnabled(true);
+				txtGetInfoStatus.setText(resultString);
+			}
+			
+			private String resultString = "done";
+		};
+		
+		worker.execute();
+    }//GEN-LAST:event_btnGetInfoActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGetInfo;
