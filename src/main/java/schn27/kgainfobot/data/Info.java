@@ -48,7 +48,17 @@ public final class Info {
 			
 		return list;
 	}
-
+	
+	public Structure getStructure(int code) {
+		List<Structure> ss = getStructures();
+		
+		for (Structure s : ss) {
+			if (s.code == code)
+				return s;
+		}
+		return new Structure(code, "?");
+	}
+	
 	public List<Department> getDepartments(int structureCode) {
 		List<Department> list = new ArrayList<>();
 		
@@ -58,6 +68,15 @@ public final class Info {
 		}
 			
 		return list;
+	}
+
+	public Department getDepartment(Structure structure, int code) {
+		List<Department> dd = getDepartments(structure.code);
+		for (Department d : dd) {
+			if (d.code == code)
+				return d;
+		}
+		return new Department(0, code, "?", "?");
 	}
 	
 	public List<Theme> getThemes(int structureCode, int departmentCode) {
@@ -70,6 +89,15 @@ public final class Info {
 		return new ArrayList<>();
 	}
 	
+	public Theme getTheme(Structure structure, Department department, int id) {
+		List<Theme> tt = getThemes(structure.code, department.code);
+		for (Theme t : tt) {
+			if (t.id == id)
+				return t;
+		}
+		return new Theme(id, "?");
+	}
+
 	public void addStructure(Structure structure) {
 		structures.put(structure.code, new StructureEntry(structure));
 	}

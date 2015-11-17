@@ -16,7 +16,8 @@
  */
 package schn27.kgainfobot;
 
-import schn27.kgainfobot.data.RegistrationRequest;
+import schn27.kgainfobot.networking.Session;
+import schn27.kgainfobot.data.Request;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class Main {
 		System.exit(exitCode);*/
 	}
    
-    private static boolean doRegister(Session session, RegistrationRequest request) {
+    private static boolean doRegister(Session session, Request request) {
         boolean res = session.register(request);
         System.out.println("register result = " + res);
 		return res;

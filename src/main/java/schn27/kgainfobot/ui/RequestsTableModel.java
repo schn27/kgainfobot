@@ -18,24 +18,25 @@ package schn27.kgainfobot.ui;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
-import schn27.kgainfobot.data.Account;
-import schn27.kgainfobot.data.AccountsManager;
+import schn27.kgainfobot.data.Request;
+import schn27.kgainfobot.data.RequestsManager;
 
 /**
  *
  * @author amalikov
  */
-public class AccountsTableModel extends AbstractTableModel {
+public class RequestsTableModel extends AbstractTableModel {
+
+	private static final String[] Headers = new String[]{
+		"Account", "Structure", "Department", "Theme", "Comment", "Time", "Status"};
 	
-	private static final String[] Headers = new String[]{"Name", "Login", "Password"};
-	
-	public AccountsTableModel(AccountsManager accountsManager) {
-		this.accountsManager = accountsManager;
+	public RequestsTableModel(RequestsManager requestsManager) {
+		this.requestsManager = requestsManager;
 	}
 	
 	@Override
 	public int getRowCount() {
-		return accountsManager.getNumberOfAccounts();
+		return requestsManager.getNumberOfRequests();
 	}
 
 	@Override
@@ -45,14 +46,22 @@ public class AccountsTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int col) {
-		Account account = accountsManager.get(row);
+		Request request = requestsManager.get(row);
 		switch (col) {
 			case 0:
-				return account.name;
+				return request.account.name;
 			case 1:
-				return account.login;
+				return request.structure.name;
 			case 2:
-				return account.password;
+				return request.department.name;
+			case 3:
+				return request.theme.name;
+			case 4:
+				return request.comment;
+			case 5:
+				return request.desiredTime.toString();
+			case 6:
+				return request.status.toString();
 			default:
 				return "";
 		}
@@ -74,43 +83,22 @@ public class AccountsTableModel extends AbstractTableModel {
 	
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		return true;
+		return false;
 	}
-	
-	@Override
-	public void setValueAt(Object val, int row, int col) {
-		Account account = accountsManager.get(row);
-		switch (col) {
-			case 0:
-				accountsManager.set(row, new Account((String)val, account.login, account.password));
-				break;
-			case 1:
-				accountsManager.set(row, new Account(account.name, (String)val, account.password));
-				break;
-			case 2:
-				accountsManager.set(row, new Account(account.name, account.login, (String)val));
-				break;
-		}
-		fireTableChanged(new TableModelEvent(this));
-	}
-	
-	public void addRow(Account account) {
-		accountsManager.add(account);
+
+	public void addRow(Request request) {
+		requestsManager.add(request);
 		fireTableChanged(new TableModelEvent(this));
 	}
 
-	public void addRow() {
-		addRow(new Account("noname", "", ""));
-	}	
-	
 	public void removeRow(int row) {
-		accountsManager.remove(row);
+		requestsManager.remove(row);
 		fireTableChanged(new TableModelEvent(this));
 	}
 	
-	public Account getAccount(int row) {
-		return accountsManager.get(row);
+	public Request getAccount(int row) {
+		return requestsManager.get(row);
 	}
 	
-	private final AccountsManager accountsManager;
+	private final RequestsManager requestsManager;
 }

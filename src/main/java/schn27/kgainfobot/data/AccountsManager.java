@@ -45,6 +45,14 @@ public class AccountsManager {
 		return accounts.get(index);
 	}
 	
+	public Account get(String name) {
+		for (Account a : accounts) {
+			if (a.name.equals(name))
+				return a;
+		}
+		return new Account(name, "", "");
+	}
+	
 	public void set(int index, Account account) {
 		accounts.set(index, account);
 		saveToFile();
