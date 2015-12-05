@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package schn27.kgainfobot;
+package schn27.kgainfobot.networking;
 
 import schn27.kgainfobot.data.Time;
 import schn27.kgainfobot.data.Theme;
 import schn27.kgainfobot.data.Structure;
-import schn27.kgainfobot.data.RegistrationRequest;
+import schn27.kgainfobot.data.Request;
 import schn27.kgainfobot.data.Department;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -35,6 +35,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import schn27.kgainfobot.CaptchaMd5Decoder;
 
 /**
  *
@@ -42,6 +43,15 @@ import org.jsoup.select.Elements;
  */
 public class Session {
 
+	private final static String host = "http://priem.kgainfo.spb.ru";
+	private final static String loginURL = host + "/login";
+	private final static String registrationURL = host + "/user/requests";
+	private final static String getDepartmentURL = host + "/service/getdep";
+	private final static String getThemeURL = host + "/service/getthemes";
+	private final static String addCommentURL = host + "/user/addcomments";
+	private final static String getDateURL = host + "/service/getdate";
+	private final static String getTimeURL = host + "/service/getfreetime";	
+	
 	public Session() {
 		uncaptcha = new CaptchaMd5Decoder();
 	}
@@ -129,7 +139,7 @@ public class Session {
 		return list;
 	}
 
-	public boolean register(RegistrationRequest request) {
+	public boolean register(Request request) {
 		boolean result = false;
 
 		try {
@@ -137,16 +147,16 @@ public class Session {
 			Document doc = Jsoup.parse(response.getBody());
 			String captchaHash = getCaptchaHash(doc);
 
-			List<String> dateList = waitForDateList(request.departmentCode, request.timeout);
+			List<String> dateList = waitForDateList(request.department.code, request.timeout);
 			if (!dateList.isEmpty() && !dateList.get(0).isEmpty()) {
-				Time time = getClosestTime(request.departmentCode, dateList.get(0), request.desiredTime);
+				Time time = getClosestTime(request.department.code, dateList.get(0), request.desiredTime);
 				
 				if (time.isValid()) {
 					response = Unirest.post(registrationURL)
 							.header("Accept-encoding", "identity")
-							.field("themes_id", request.themeId)
-							.field("structure_code", request.structureCode)
-							.field("otdel_code", request.departmentCode)
+							.field("themes_id", request.theme.id)
+							.field("structure_code", request.structure.code)
+							.field("otdel_code", request.department.code)
 							.field("date_start", dateList.get(0))
 							.field("time_start", time.toString())
 							.field("captcha_text", uncaptcha.decode(captchaHash))
@@ -251,13 +261,4 @@ public class Session {
 	}
 
 	private final CaptchaMd5Decoder uncaptcha;
-
-	private final static String host = "http://priem.kgainfo.spb.ru";
-	private final static String loginURL = host + "/login";
-	private final static String registrationURL = host + "/user/requests";
-	private final static String getDepartmentURL = host + "/service/getdep";
-	private final static String getThemeURL = host + "/service/getthemes";
-	private final static String addCommentURL = host + "/user/addcomments";
-	private final static String getDateURL = host + "/service/getdate";
-	private final static String getTimeURL = host + "/service/getfreetime";
 }

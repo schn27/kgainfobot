@@ -16,13 +16,12 @@
  */
 package schn27.kgainfobot;
 
-import schn27.kgainfobot.data.RegistrationRequest;
+import schn27.kgainfobot.networking.Session;
+import schn27.kgainfobot.data.Request;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import schn27.kgainfobot.data.Department;
 import schn27.kgainfobot.data.Info;
 import schn27.kgainfobot.data.Structure;
@@ -36,10 +35,11 @@ import schn27.kgainfobot.ui.MainFrame;
 public class Main {
 
 	public static void main(String[] args) throws IOException, UnirestException {
-        int exitCode = 0;
+		MainFrame.createAndShow();
 		setShutdownHook(true);
         
-        CommandLineParser cmdParser = new CommandLineParser(args);
+/*      int exitCode = 0;  
+		CommandLineParser cmdParser = new CommandLineParser(args);
 
 		Session session = new Session();
 		if (session.login(cmdParser.getLogin(), cmdParser.getPass())) {      // "H6Pu9bp", "NawVUVi"
@@ -60,7 +60,7 @@ public class Main {
 					doCreateInfoFile(session, cmdParser.getFileName());
 					break;
                 default:
-					MainFrame.createAndShow();
+                    System.err.println("Unknown command");
 					exitCode = -1;
             }
 		} else {
@@ -68,12 +68,12 @@ public class Main {
 			exitCode = -1;
 		}
 
-/*		Unirest.shutdown();
+		Unirest.shutdown();
 		setShutdownHook(false);
-		System.exit(exitCode);
-*/	}
+		System.exit(exitCode);*/
+	}
    
-    private static boolean doRegister(Session session, RegistrationRequest request) {
+    private static boolean doRegister(Session session, Request request) {
         boolean res = session.register(request);
         System.out.println("register result = " + res);
 		return res;
@@ -98,7 +98,7 @@ public class Main {
     }
 
 	private static void doCreateInfoFile(Session session, String fileName) throws UnirestException {
-		Info info = new Info();
+		Info info = new Info(fileName);
 		
 		List<Structure> structures = session.getStructureList();
 		info.addStructures(structures);
@@ -113,7 +113,7 @@ public class Main {
 			}
 		}		
 		
-		info.saveToFile(fileName);
+		info.saveToFile();
 	}	
 	
 	private static void setShutdownHook(boolean set) {

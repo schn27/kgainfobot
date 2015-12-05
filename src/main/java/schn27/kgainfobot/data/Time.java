@@ -47,6 +47,26 @@ public final class Time {
 	public String toString() {
 		return String.format("%02d:%02d", value / 60, value % 60);
 	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other == null) 
+			return false;
+		if (other == this) 
+			return true;
+		if (!(other instanceof Time))
+			return false;
+    
+		Time otherTime = (Time)other;
+    	return otherTime.value == value;
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 97 * hash + this.value;
+		return hash;
+	}
 
 	public final int value;		///< time in minutes of the day
 

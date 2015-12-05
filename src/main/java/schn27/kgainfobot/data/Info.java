@@ -16,37 +16,17 @@
  */
 package schn27.kgainfobot.data;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import schn27.kgainfobot.xml.XmlLoader;
+import schn27.kgainfobot.xml.XmlSaver;
 
 /**
  * Container of info of all structures, departments and themes
@@ -55,7 +35,8 @@ import org.xml.sax.SAXException;
  */
 public final class Info {
 
-	public Info() {
+	public Info(String fileName) {
+		this.fileName = fileName;
 		structures = new HashMap<>();
 	}
 	
@@ -67,7 +48,17 @@ public final class Info {
 			
 		return list;
 	}
-
+	
+	public Structure getStructure(int code) {
+		List<Structure> ss = getStructures();
+		
+		for (Structure s : ss) {
+			if (s.code == code)
+				return s;
+		}
+		return new Structure(code, "?");
+	}
+	
 	public List<Department> getDepartments(int structureCode) {
 		List<Department> list = new ArrayList<>();
 		
@@ -77,6 +68,15 @@ public final class Info {
 		}
 			
 		return list;
+	}
+
+	public Department getDepartment(Structure structure, int code) {
+		List<Department> dd = getDepartments(structure.code);
+		for (Department d : dd) {
+			if (d.code == code)
+				return d;
+		}
+		return new Department(0, code, "?", "?");
 	}
 	
 	public List<Theme> getThemes(int structureCode, int departmentCode) {
@@ -89,6 +89,15 @@ public final class Info {
 		return new ArrayList<>();
 	}
 	
+	public Theme getTheme(Structure structure, Department department, int id) {
+		List<Theme> tt = getThemes(structure.code, department.code);
+		for (Theme t : tt) {
+			if (t.id == id)
+				return t;
+		}
+		return new Theme(id, "?");
+	}
+
 	public void addStructure(Structure structure) {
 		structures.put(structure.code, new StructureEntry(structure));
 	}
@@ -121,32 +130,41 @@ public final class Info {
 			addTheme(structureCode, departmentCode, t);
 	}	
 	
-	public void loadFromFile(String filename) {
-		try (Reader file = new InputStreamReader(new FileInputStream(filename), "UTF-8")) {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();		
-			Document doc = db.parse(new InputSource(file));
-			Element root = doc.getDocumentElement();
-			
-			loadStructures(root);
-		} catch (ParserConfigurationException | SAXException | IOException ex) {
-			Logger.getLogger(Info.class.getName()).log(Level.SEVERE, null, ex);
-		}
+	public void clear() {
+		structures = new HashMap<>();
 	}
 	
-	public void saveToFile(String filename) {
-		try (Writer file = new OutputStreamWriter(new FileOutputStream(filename, false), "UTF-8")) {
-			StreamResult streamResult = new StreamResult(file);
-			TransformerFactory tf = TransformerFactory.newInstance();
-			tf.setAttribute("indent-number", 4); 
-			Transformer serializer = tf.newTransformer();
-			serializer.setOutputProperty(OutputKeys.METHOD, "xml");
-			serializer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			serializer.setOutputProperty(OutputKeys.INDENT, "yes");
-			serializer.transform(createDOMSource(), streamResult);
-        } catch (TransformerException | IOException | ParserConfigurationException ex) {
-			Logger.getLogger(Info.class.getName()).log(Level.SEVERE, null, ex);
-        }		
+	public void loadFromFile() {
+		XmlLoader.load(fileName, (Document doc) -> loadStructures(doc.getDocumentElement()));
+	}
+	
+	public void saveToFile() {
+		XmlSaver.save(fileName, "kgainfo", (Document doc) -> {
+			for (StructureEntry s : structures.values()) {
+				final Element snode = doc.createElementNS(null, "structure");
+				snode.setAttribute("code", Integer.toString(s.structure.code));
+				snode.setAttribute("name", s.structure.name);
+
+				for (DepartmentEntry d : s.departments.values()) {
+					final Element dnode = doc.createElementNS(null, "department");
+					dnode.setAttribute("code", Integer.toString(d.department.code));
+					dnode.setAttribute("id", Integer.toString(d.department.id));
+					dnode.setAttribute("name", d.department.name);
+					dnode.setAttribute("position", d.department.position);
+
+					for (Theme t : d.themes) {
+						final Element tnode = doc.createElementNS(null, "theme");
+						tnode.setAttribute("id", Integer.toString(t.id));
+						tnode.setAttribute("name", t.name);
+						dnode.appendChild(tnode);
+					}
+
+					snode.appendChild(dnode);
+				}
+
+				doc.getDocumentElement().appendChild(snode);
+			}
+		});
 	}
 
 	private void loadStructures(Element root) {
@@ -192,41 +210,6 @@ public final class Info {
 		}		
 	}	
 	
-	private DOMSource createDOMSource() throws ParserConfigurationException {
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db = dbf.newDocumentBuilder();
-		DOMImplementation impl = db.getDOMImplementation();
-		Document doc = impl.createDocument(null, "kgainfo", null);
-		doc.setXmlStandalone(true);
-		
-		for (StructureEntry s : structures.values()) {
-			final Element snode = doc.createElementNS(null, "structure");
-			snode.setAttribute("code", Integer.toString(s.structure.code));
-			snode.setAttribute("name", s.structure.name);
-			
-			for (DepartmentEntry d : s.departments.values()) {
-				final Element dnode = doc.createElementNS(null, "department");
-				dnode.setAttribute("code", Integer.toString(d.department.code));
-				dnode.setAttribute("id", Integer.toString(d.department.id));
-				dnode.setAttribute("name", d.department.name);
-				dnode.setAttribute("position", d.department.position);
-				
-				for (Theme t : d.themes) {
-					final Element tnode = doc.createElementNS(null, "theme");
-					tnode.setAttribute("id", Integer.toString(t.id));
-					tnode.setAttribute("name", t.name);
-					dnode.appendChild(tnode);
-				}
-				
-				snode.appendChild(dnode);
-			}
-			
-			doc.getDocumentElement().appendChild(snode);
-		}
-
-		return new DOMSource(doc);
-	}
-	
 	private final class StructureEntry {
 		public StructureEntry(Structure structure) {
 			this.structure = structure;
@@ -247,5 +230,6 @@ public final class Info {
 		public final List<Theme> themes;
 	}
 	
-	private final Map<Integer, StructureEntry> structures;
+	private final String fileName;
+	private Map<Integer, StructureEntry> structures;
 }

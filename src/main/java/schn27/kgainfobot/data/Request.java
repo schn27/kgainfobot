@@ -21,19 +21,20 @@ package schn27.kgainfobot.data;
  * 
  * @author amalikov
  */
-public class RegistrationRequest {
+public class Request {
     
-    public RegistrationRequest() {
+    public Request() {
         desiredTime = new Time("10:00");
         comment = "...";
         timeout = 60;
     }
 
-	public int structureCode;	///< structure code (f.e. 812000)
-	public int departmentCode;	///< department code (f.e. 812003)
-	public int themeId;			///< theme id (f.e. 11)
-	public String themeName;	///< human readable theme name in Russian (probably obsolete) (f.e. "Согласование проектов в ОПС")
-	public Time desiredTime;	///< desired time of registration (f.e. Time("10:00"))
-	public String comment;		///< human readable comment (f.e. "...")
+	public Account account;
+	public Structure structure;
+	public Department department;
+	public Theme theme;
+	public Time desiredTime;
+	public String comment;
     public int timeout;			///< timeout of request processing in seconds (f.e. 60)
+	public Status status;
 }

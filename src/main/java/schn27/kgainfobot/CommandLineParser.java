@@ -18,7 +18,10 @@ package schn27.kgainfobot;
 
 import java.util.HashMap;
 import java.util.Map;
-import schn27.kgainfobot.data.RegistrationRequest;
+import schn27.kgainfobot.data.Department;
+import schn27.kgainfobot.data.Request;
+import schn27.kgainfobot.data.Structure;
+import schn27.kgainfobot.data.Theme;
 import schn27.kgainfobot.data.Time;
 
 /**
@@ -64,11 +67,11 @@ public class CommandLineParser {
         return args.getOrDefault("pass", "");
     }
     
-    public RegistrationRequest getRegisterRequest() {
-        RegistrationRequest request = new RegistrationRequest();
-        request.structureCode = Integer.parseInt(args.getOrDefault("structure", "0"));
-        request.departmentCode = Integer.parseInt(args.getOrDefault("department", "0"));
-        request.themeId = Integer.parseInt(args.getOrDefault("theme", "0"));
+    public Request getRegisterRequest() {
+        Request request = new Request();
+        request.structure = new Structure(args.getOrDefault("structure", "0"), "name-here");
+        request.department = new Department("0", args.getOrDefault("department", "0"), "name-here", "position-here");
+        request.theme = new Theme(args.getOrDefault("theme", "0"), "theme-here");
         request.desiredTime = new Time(args.getOrDefault("time", "10:00"));
         request.comment = args.getOrDefault("comment", "-");
 		request.timeout = Integer.parseInt(args.getOrDefault("timeout", "10"));
