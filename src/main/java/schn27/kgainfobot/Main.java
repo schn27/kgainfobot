@@ -36,8 +36,7 @@ import schn27.kgainfobot.ui.MainFrame;
 public class Main {
 
 	public static void main(String[] args) throws IOException, UnirestException {
-		MainFrame.createAndShow();
-    /*    int exitCode = 0;
+        int exitCode = 0;
 		setShutdownHook(true);
         
         CommandLineParser cmdParser = new CommandLineParser(args);
@@ -61,7 +60,7 @@ public class Main {
 					doCreateInfoFile(session, cmdParser.getFileName());
 					break;
                 default:
-                    System.err.println("Unknown command");
+					MainFrame.createAndShow();
 					exitCode = -1;
             }
 		} else {
@@ -69,10 +68,10 @@ public class Main {
 			exitCode = -1;
 		}
 
-		Unirest.shutdown();
+/*		Unirest.shutdown();
 		setShutdownHook(false);
-		System.exit(exitCode);*/
-	}
+		System.exit(exitCode);
+*/	}
    
     private static boolean doRegister(Session session, RegistrationRequest request) {
         boolean res = session.register(request);
