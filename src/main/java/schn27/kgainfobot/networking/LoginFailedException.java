@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2015 amalikov
+/* 
+ * Copyright (C) 2016 Aleksandr Malikov <schn27@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
