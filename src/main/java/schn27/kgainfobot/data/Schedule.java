@@ -59,8 +59,15 @@ public class Schedule {
 		Time oldEndTime = this.endTime;
 		boolean[] oldWeekDays = Arrays.copyOf(this.weekDays, this.weekDays.length);
 		
-		this.startTime = new Time(startTime);
-		this.endTime = new Time(endTime);
+		try {
+			this.startTime = new Time(startTime);
+		} catch (NumberFormatException ex) {
+		}
+		
+		try {
+			this.endTime = new Time(endTime);
+		} catch (NumberFormatException ex) {
+		}
 		
 		for (int i = 0; i < weekDays.length; ++i) {
 			this.weekDays[i] = weekDays[i];
