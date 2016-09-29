@@ -19,6 +19,9 @@ package schn27.kgainfobot;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import schn27.kgainfobot.ui.MainFrame;
 
 /**
@@ -28,10 +31,19 @@ import schn27.kgainfobot.ui.MainFrame;
 public class Main {
 
 	public static void main(String[] args) throws IOException, UnirestException {
+		setupLogger();
 		MainFrame.createAndShow();
 		setShutdownHook(true);
 	}
-        
+
+	private static void setupLogger() {
+		try {
+			LogManager.getLogManager().readConfiguration(Main.class.getResourceAsStream("/logging.properties"));
+		} catch (IOException | SecurityException ex) {
+			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
 	private static void setShutdownHook(boolean set) {
 		if (hook == null) {
 			hook = new Thread(() -> {
