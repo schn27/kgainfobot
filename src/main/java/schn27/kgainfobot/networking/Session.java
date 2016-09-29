@@ -61,7 +61,7 @@ public class Session {
 
 		try {
 			Unirest.get(host).asString();
-
+			
 			HttpResponse<String> response = Unirest.post(loginURL)
 					.header("Accept-encoding", "identity")
 					.field("username", username)
@@ -69,9 +69,13 @@ public class Session {
 					.field("login", "Войти")
 					.asString();
 
+			
+			
 			if (response.getStatus() == 302) {
 				Unirest.get(host).asString();
 				result = true;
+			} else {
+				Logger.getLogger(Session.class.getName()).log(Level.SEVERE, String.format("Failed to login with status = %d", response.getStatus()));
 			}
 
 		} catch (UnirestException ex) {
@@ -94,10 +98,17 @@ public class Session {
 					Elements options = tag.children();
 					for (Element option : options) {
 						if (!option.attr("label").isEmpty()) {
-							list.add(new Structure(option.attr("value"), option.attr("label")));
+							Structure s = new Structure(option.attr("value"), option.attr("label"));
+							list.add(s);
+							Logger.getLogger(Session.class.getName()).log(Level.INFO, String.format("%d %s", s.code, s.name));
 						}
 					}
 				}
+			}
+			
+			if (list.isEmpty()) {
+				Logger.getLogger(Session.class.getName()).log(Level.SEVERE, 
+						String.format("Can't find structures in response: \n%s", response.getBody()));
 			}
 		} catch (UnirestException ex) {
 			Logger.getLogger(Session.class.getName()).log(Level.SEVERE, null, ex);
@@ -112,6 +123,8 @@ public class Session {
 		HttpResponse<JsonNode> response = Unirest.post(getDepartmentURL)
 				.field("code", code)
 				.asJson();
+		
+		Logger.getLogger(Session.class.getName()).log(Level.INFO, response.getBody().toString());
 
 		JSONArray array = response.getBody().getArray();
 		for (int i = 0; i < array.length(); ++i) {
@@ -128,6 +141,8 @@ public class Session {
 		HttpResponse<JsonNode> response = Unirest.post(getThemeURL)
 				.field("code", code)
 				.asJson();
+		
+		Logger.getLogger(Session.class.getName()).log(Level.INFO, response.getBody().toString());
 
 		JSONArray array = response.getBody().getObject().optJSONArray("info");
 		if (array != null) {
@@ -174,6 +189,9 @@ public class Session {
 								.field("send", "Отправить")
 								.asString();
 						result = true;
+					} else {
+						Logger.getLogger(Session.class.getName()).log(Level.SEVERE, 
+								String.format("Failed to register: %d", response != null ? response.getStatus() : 0));
 					}
 				}
 			}
