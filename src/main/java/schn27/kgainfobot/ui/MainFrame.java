@@ -20,9 +20,11 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.concurrent.ExecutionException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import javax.swing.table.TableModel;
+import schn27.kgainfobot.data.Account;
 import schn27.kgainfobot.data.AccountsManager;
 import schn27.kgainfobot.data.Info;
 import schn27.kgainfobot.data.RequestsManager;
@@ -141,6 +143,44 @@ public class MainFrame extends javax.swing.JFrame {
 					chkWeekDay5.isSelected(),
 				});
     }
+	
+	private void getInfo(Account account) {
+		btnGetInfo.setEnabled(false);
+		txtGetInfoStatus.setText("in progress");
+		
+		SwingWorker<Info, Void> worker = new SwingWorker<Info, Void>() {
+			@Override
+			protected Info doInBackground() throws Exception {
+				Info info = new Info(InfoFileName);
+				InfoReader.read(account, info);
+				return info;
+			}
+			
+			@Override
+			protected void done() {
+				String resultString = "error";
+				
+				try {
+					MainFrame.this.info = get();
+					MainFrame.this.info.saveToFile();
+					resultString = "done";
+					
+				} catch (ExecutionException ex) {
+					if (ex.getCause() instanceof UnirestException) {
+						resultString = "network failed";
+					} else if (ex.getCause() instanceof LoginFailedException) {
+						resultString = "login failed";
+					}
+				} catch (InterruptedException ex) {
+				} finally {
+					txtGetInfoStatus.setText(resultString);
+					btnGetInfo.setEnabled(true);
+				}
+			}
+		};
+		
+		worker.execute();		
+	}
 	
 	/**
 	 * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of this method is always
@@ -422,41 +462,11 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_accountsPopupMenuPopupMenuWillBecomeVisible
 
     private void btnGetInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGetInfoActionPerformed
-		if (tblAccounts.getRowCount() <= 0) {
-			JOptionPane.showMessageDialog(this, "No account yet!");
-			return;
+		if (tblAccounts.getRowCount() <= 0 || tblAccounts.getSelectedRow() < 0) {
+			JOptionPane.showMessageDialog(this, "Please select an account!");
+		} else {
+			getInfo(((AccountsTableModel)tblAccounts.getModel()).getAccount(tblAccounts.getSelectedRow()));
 		}
-		
-		SwingWorker<Info, Void> worker = new SwingWorker<Info, Void>() {
-			@Override
-			public Info doInBackground() throws Exception {
-				Info info = new Info(InfoFileName);
-				btnGetInfo.setEnabled(false);
-				txtGetInfoStatus.setText("in progress");
-				
-				try {
-					InfoReader.read(
-							((AccountsTableModel)tblAccounts.getModel()).getAccount(tblAccounts.getSelectedRow()), 
-							info);
-				} catch (UnirestException ex) {
-					resultString = "network failed";
-				} catch (LoginFailedException ex) {
-					resultString = "login failed";
-				}
-				
-				return info;
-			}
-
-			@Override
-			public void done() {
-				btnGetInfo.setEnabled(true);
-				txtGetInfoStatus.setText(resultString);
-			}
-			
-			private String resultString = "done";
-		};
-		
-		worker.execute();
     }//GEN-LAST:event_btnGetInfoActionPerformed
 
     private void addRequestActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRequestActionPerformed
