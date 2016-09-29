@@ -44,24 +44,24 @@ public class Main {
 		Session session = new Session();
 		if (session.login(cmdParser.getLogin(), cmdParser.getPass())) {      // "H6Pu9bp", "NawVUVi"
 			switch (cmdParser.getCommand()) {
-                case CommandLineParser.REGISTER:
-                    exitCode = doRegister(session, cmdParser.getRegisterRequest()) ? 0 : -1;
-                    break;
-                case CommandLineParser.GET_STRUCTURE_LIST:
-                    doGetStructureList(session);
-                    break;
-                case CommandLineParser.GET_DEPARTMENT_LIST:
-                    doGetDepartmentList(session, cmdParser.getCode());
-                    break;
-                case CommandLineParser.GET_THEME_LIST:
-                    doGetThemeList(session, cmdParser.getCode());
-                    break;
-				case CommandLineParser.CREATE_INFO_FILE:
-					doCreateInfoFile(session, cmdParser.getFileName());
-					break;
-                default:
-                    System.err.println("Unknown command");
-					exitCode = -1;
+			case CommandLineParser.REGISTER:
+				exitCode = doRegister(session, cmdParser.getRegisterRequest()) ? 0 : -1;
+				break;
+			case CommandLineParser.GET_STRUCTURE_LIST:
+				doGetStructureList(session);
+				break;
+			case CommandLineParser.GET_DEPARTMENT_LIST:
+				doGetDepartmentList(session, cmdParser.getCode());
+				break;
+			case CommandLineParser.GET_THEME_LIST:
+				doGetThemeList(session, cmdParser.getCode());
+				break;
+			case CommandLineParser.CREATE_INFO_FILE:
+				doCreateInfoFile(session, cmdParser.getFileName());
+				break;
+			default:
+				System.err.println("Unknown command");
+				exitCode = -1;
             }
 		} else {
 			System.err.println("Login failed");
@@ -81,20 +81,17 @@ public class Main {
     
     private static void doGetStructureList(Session session) {
         List<Structure> list = session.getStructureList();
-        for (Structure s : list)
-            System.out.println(s.code + " " + s.name);
+		list.forEach((s) -> System.out.println(s.code + " " + s.name));
     }
 
     private static void doGetDepartmentList(Session session, int code) throws UnirestException {
         List<Department> list = session.getDepartmentList(Integer.toString(code));
-        for (Department d : list)
-            System.out.println(d.code + " " + d.id + " " + d.name + " " + d.position);
+		list.forEach((d) -> System.out.println(d.code + " " + d.id + " " + d.name + " " + d.position));
     }
 
     private static void doGetThemeList(Session session, int code) throws UnirestException {
         List<Theme> list = session.getThemeList(Integer.toString(code));
-        for (Theme t : list)
-            System.out.println(t.id + " " + t.name);
+		list.forEach((t) -> System.out.println(t.id + " " + t.name));
     }
 
 	private static void doCreateInfoFile(Session session, String fileName) throws UnirestException {
@@ -117,24 +114,23 @@ public class Main {
 	}	
 	
 	private static void setShutdownHook(boolean set) {
-		if (hook == null)
-			hook = new Thread() {
-				@Override
-				public void run() {
-					System.out.println("Shutdown hook");
-
-					try {
-						Unirest.shutdown();
-					} catch (IOException ex) {
-					}
+		if (hook == null) {
+			hook = new Thread(() -> {
+				System.out.println("Shutdown hook");
+				
+				try {
+					Unirest.shutdown();
+				} catch (IOException ex) {
 				}
-			};
+			});
+		}
 
-		if (set)
+		if (set) {
 			Runtime.getRuntime().addShutdownHook(hook);
-		else
+		} else {
 			Runtime.getRuntime().removeShutdownHook(hook);
+		}
 	}
 
-	private static Thread hook = null;
+	private static Thread hook;
 }

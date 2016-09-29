@@ -25,10 +25,7 @@ package schn27.kgainfobot.data;
 public final class Time {
 
 	public Time(int value) {
-		if (value >= 0 && value < 24 * 60)
-			this.value = value;
-		else
-			this.value = INVALID_VALUE;
+		this.value = (value >= 0 && value < 24 * 60) ? value : INVALID_VALUE;
 	}
 
 	public Time(String time) {
@@ -50,12 +47,17 @@ public final class Time {
 	
 	@Override
 	public boolean equals(Object other) {
-		if (other == null) 
+		if (other == null) {
 			return false;
-		if (other == this) 
+		}
+		
+		if (other == this) {
 			return true;
-		if (!(other instanceof Time))
+		}
+		
+		if (!(other instanceof Time)) {
 			return false;
+		}
     
 		Time otherTime = (Time)other;
     	return otherTime.value == value;

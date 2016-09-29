@@ -44,18 +44,18 @@ public class CommandLineParser {
     
     public int getCommand() {
         switch (args.getOrDefault("cmd", "register")) {
-            case "register":
-                return REGISTER;
-            case "getstructures":
-                return GET_STRUCTURE_LIST;
-            case "getdepartments":
-                return GET_DEPARTMENT_LIST;
-            case "getthemes":
-                return GET_THEME_LIST;
-			case "infofile":
-				return CREATE_INFO_FILE;
-            default:
-                return INVALID_COMMAND;
+		case "register":
+			return REGISTER;
+		case "getstructures":
+			return GET_STRUCTURE_LIST;
+		case "getdepartments":
+			return GET_DEPARTMENT_LIST;
+		case "getthemes":
+			return GET_THEME_LIST;
+		case "infofile":
+			return CREATE_INFO_FILE;
+		default:
+			return INVALID_COMMAND;
         }
     }
     
@@ -90,12 +90,14 @@ public class CommandLineParser {
         Map<String, String> res = new HashMap<>();
         for (String arg : args) {
             String[] split = arg.split("=");
-            if (split.length == 2)
+            if (split.length == 2) {
                 res.put(split[0].toLowerCase(), split[1]);
+			}
         }
 		
-		if (res.isEmpty())
+		if (res.isEmpty()) {
 			printUsage();
+		}
 		
         return res;
     }

@@ -48,22 +48,22 @@ public class RequestsTableModel extends AbstractTableModel {
 	public Object getValueAt(int row, int col) {
 		Request request = requestsManager.get(row);
 		switch (col) {
-			case 0:
-				return request.account.name;
-			case 1:
-				return request.structure.name;
-			case 2:
-				return request.department.name;
-			case 3:
-				return request.theme.name;
-			case 4:
-				return request.comment;
-			case 5:
-				return request.desiredTime.toString();
-			case 6:
-				return request.status.toString();
-			default:
-				return "";
+		case 0:
+			return request.account.name;
+		case 1:
+			return request.structure.name;
+		case 2:
+			return request.department.name;
+		case 3:
+			return request.theme.name;
+		case 4:
+			return request.comment;
+		case 5:
+			return request.desiredTime.toString();
+		case 6:
+			return request.status.toString();
+		default:
+			return "";
 		}
 	}
 	

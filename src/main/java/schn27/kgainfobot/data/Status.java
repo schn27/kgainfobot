@@ -36,8 +36,9 @@ public final class Status {
 	public Status(String strStatus) {
 		set(Waiting);
 		for (int i = Waiting; i <= TimedOut; ++i) {
-			if (names[i].equalsIgnoreCase(strStatus))
+			if (names[i].equalsIgnoreCase(strStatus)) {
 				set(i);
+			}
 		}
 			
 	}
@@ -48,8 +49,9 @@ public final class Status {
 	}
 	
 	public void set(int newStatus) {
-		if (newStatus >= 0 && newStatus < names.length)
+		if (newStatus >= 0 && newStatus < names.length) {
 			status = newStatus;
+		}
 	}
 	
 	public int get() {

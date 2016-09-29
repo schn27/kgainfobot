@@ -39,7 +39,7 @@ public final class Department {
 	
 	@Override
 	public String toString() {
-		return name + "(" + position + ")";
+		return String.format("%s(%s)", name, position);
 	}
 
 	public final int id;			///< useless id of the department

@@ -21,7 +21,6 @@ import schn27.kgainfobot.data.Account;
 import schn27.kgainfobot.data.Department;
 import schn27.kgainfobot.data.Info;
 import schn27.kgainfobot.data.Structure;
-import schn27.kgainfobot.data.Theme;
 
 /**
  *
@@ -39,29 +38,25 @@ public class TaskEditor extends javax.swing.JFrame {
 
 	private void initAccounts() {
 		cmbAccount.removeAllItems();
-		for (Account a : accounts)
-			cmbAccount.addItem(a);
+		accounts.forEach((a) -> cmbAccount.addItem(a));
 	}
 	
 	private void initStructures() {
 		cmbStructure.removeAllItems();
-		for (Structure s : info.getStructures())
-			cmbStructure.addItem(s);
+		info.getStructures().forEach((s) -> cmbStructure.addItem(s));
 	}
 	
 	private void initDepartments(Structure structure) {
 		cmbDepartment.removeAllItems();
 		if (structure != null) {
-			for (Department d : info.getDepartments(structure.code))
-				cmbDepartment.addItem(d);
+			info.getDepartments(structure.code).forEach((d) -> cmbDepartment.addItem(d));
 		}
 	}
 
 	private void initThemes(Structure structure, Department department) {
 		cmbTheme.removeAllItems();
 		if (structure != null && department != null) {
-			for (Theme t : info.getThemes(structure.code, department.code))
-				cmbTheme.addItem(t);
+			info.getThemes(structure.code, department.code).forEach((t) -> cmbTheme.addItem(t));
 		}
 	}
 

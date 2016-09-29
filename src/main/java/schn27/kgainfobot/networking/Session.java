@@ -93,8 +93,9 @@ public class Session {
 				if (tag.attr("name").equals("structure_code")) {
 					Elements options = tag.children();
 					for (Element option : options) {
-						if (!option.attr("label").isEmpty())
+						if (!option.attr("label").isEmpty()) {
 							list.add(new Structure(option.attr("value"), option.attr("label")));
+						}
 					}
 				}
 			}
@@ -190,8 +191,9 @@ public class Session {
 		while (System.currentTimeMillis() - startTime < timeout * 1000) {
 			List<String> list = getDateList(code);
 
-			if (!list.isEmpty() && !list.get(0).isEmpty())
+			if (!list.isEmpty() && !list.get(0).isEmpty()) {
 				return list;
+			}
 
 			try {
 				Thread.sleep(1000);
@@ -205,8 +207,9 @@ public class Session {
 	private Time getClosestTime(int code, String date, Time desiredTime) throws UnirestException {
 		List<Time> timeList = getTimeList(code, date);
 
-		if (timeList.isEmpty())
+		if (timeList.isEmpty()) {
 			return Time.getInvalid();
+		}
 		
 		Time time = timeList.get(0);
 		int delta = Math.abs(desiredTime.value - time.value);
@@ -231,8 +234,9 @@ public class Session {
 				.asJson();
 
 		JSONArray array = response.getBody().getArray();
-		for (int i = 0; i < array.length(); ++i)
+		for (int i = 0; i < array.length(); ++i) {
 			list.add(array.getString(i));
+		}
 		
 		return list;
 	}
@@ -245,8 +249,9 @@ public class Session {
 				.asJson();
 
 		JSONArray array = response.getBody().getArray();
-		for (int i = 0; i < array.length(); ++i)
+		for (int i = 0; i < array.length(); ++i) {
 			list.add(new Time(array.getString(i)));
+		}
 
 		return list;
 	}
@@ -254,8 +259,9 @@ public class Session {
 	private String getCaptchaHash(Document doc) {
 		Elements tags = doc.getElementsByTag("input");
 		for (Element tag : tags) {
-			if (tag.attr("name").equals("captcha_md5"))
+			if (tag.attr("name").equals("captcha_md5")) {
 				return tag.attr("value");
+			}
 		}
 		return "";
 	}

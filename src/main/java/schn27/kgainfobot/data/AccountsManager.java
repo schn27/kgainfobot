@@ -47,8 +47,9 @@ public class AccountsManager {
 	
 	public Account get(String name) {
 		for (Account a : accounts) {
-			if (a.name.equals(name))
+			if (a.name.equals(name)) {
 				return a;
+			}
 		}
 		return new Account(name, "", "");
 	}
@@ -78,8 +79,8 @@ public class AccountsManager {
 				Node node = nodes.item(i);
 				NamedNodeMap attrs = node.getAttributes();
 				accounts.add(new Account(attrs.getNamedItem("name").getNodeValue(),
-					attrs.getNamedItem("login").getNodeValue(),
-					attrs.getNamedItem("password").getNodeValue()));
+						attrs.getNamedItem("login").getNodeValue(),
+						attrs.getNamedItem("password").getNodeValue()));
 			}
 		});
 	}

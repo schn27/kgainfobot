@@ -56,10 +56,13 @@ public class CaptchaMd5Decoder {
 
 	private String getMD5(byte[] data) throws NoSuchAlgorithmException {
 		byte[] digest = MessageDigest.getInstance("MD5").digest(data);
-		String result = "";
-		for (int i = 0; i < digest.length; i++)
-			result += Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1);
-		return result;
+		StringBuilder result = new StringBuilder();
+		
+		for (byte b : digest) {
+			result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+		}
+		
+		return result.toString();
 	}
 	
 	private final Map<String, String> md5;

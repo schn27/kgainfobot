@@ -36,10 +36,11 @@ import schn27.kgainfobot.networking.LoginFailedException;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-	private static final String AccountsFileName = "./accounts.xml";
-	private static final String ScheduleFileName = "./schedule.xml";
-	private static final String InfoFileName = "./kgainfo.xml";
-	private static final String RequestsFileName = "./requests.xml";
+	private static final String DataPath = "./data";
+	private static final String AccountsFileName = DataPath + "/accounts.xml";
+	private static final String ScheduleFileName = DataPath + "/schedule.xml";
+	private static final String InfoFileName = DataPath + "/kgainfo.xml";
+	private static final String RequestsFileName = DataPath + "/requests.xml";
 	
 	public static void createAndShow() {
 		try {
@@ -77,8 +78,7 @@ public class MainFrame extends javax.swing.JFrame {
 		txtStartTime.addActionListener(this::scheduleActionPerformed);
 		txtStartTime.addFocusListener(new FocusListener() {
 			@Override
-			public void focusGained(FocusEvent fe) {
-			}
+			public void focusGained(FocusEvent fe) {}
 
 			@Override
 			public void focusLost(FocusEvent fe) {
@@ -90,8 +90,7 @@ public class MainFrame extends javax.swing.JFrame {
 		txtEndTime.addActionListener(this::scheduleActionPerformed);
 		txtEndTime.addFocusListener(new FocusListener() {
 			@Override
-			public void focusGained(FocusEvent fe) {
-			}
+			public void focusGained(FocusEvent fe) {}
 
 			@Override
 			public void focusLost(FocusEvent fe) {
@@ -401,8 +400,9 @@ public class MainFrame extends javax.swing.JFrame {
     private void tblAccountsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAccountsMousePressed
 		// selects the row at which point the mouse is clicked
         int currentRow = tblAccounts.rowAtPoint(evt.getPoint());
-		if (currentRow >= 0)
+		if (currentRow >= 0) {
 			tblAccounts.setRowSelectionInterval(currentRow, currentRow);
+		}
     }//GEN-LAST:event_tblAccountsMousePressed
 
     private void addAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAccountActionPerformed
@@ -411,8 +411,9 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void removeAccountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeAccountActionPerformed
         int row = tblAccounts.getSelectedRow();
-		if (row >= 0)
+		if (row >= 0) {
 			((AccountsTableModel)tblAccounts.getModel()).removeRow(row);
+		}
     }//GEN-LAST:event_removeAccountActionPerformed
 
     private void accountsPopupMenuPopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent evt) {//GEN-FIRST:event_accountsPopupMenuPopupMenuWillBecomeVisible

@@ -33,7 +33,7 @@ public class Schedule {
 	
 	public Schedule(String fileName) {
 		this.fileName = fileName;
-		weekDays = new boolean[]{false, true, false, true, false, false, false};
+		weekDays = new boolean[]{false, true, false, true, false, false, false};	// by defaylt on tuesday and thursdayS
 		startTime = new Time("9:55");
 		endTime = new Time("10:10");
 	}
@@ -62,8 +62,9 @@ public class Schedule {
 		this.startTime = new Time(startTime);
 		this.endTime = new Time(endTime);
 		
-		for (int i = 0; i < weekDays.length; ++i)
+		for (int i = 0; i < weekDays.length; ++i) {
 			this.weekDays[i] = weekDays[i];
+		}
 		
 		compareAndSave(oldStartTime, oldEndTime, oldWeekDays);
 	}
@@ -95,24 +96,26 @@ public class Schedule {
 				Node node = nodes.item(i);
 				NamedNodeMap attrs = node.getAttributes();
 				
-				if (attrs == null || attrs.getNamedItem("value") == null)
+				if (attrs == null || attrs.getNamedItem("value") == null) {
 					continue;
+				}
 
 				String value = attrs.getNamedItem("value").getNodeValue();
 
 				switch (node.getNodeName()) {
-					case "startTime":
-						startTime = new Time(value);
-						break;
-					case "endTime":
-						endTime = new Time(value);
-						break;
-					default:
-						if (node.getNodeName().startsWith("weekDay-")) {
-							int index = Integer.parseInt(node.getNodeName().substring(8)) - 1;
-							if (index >= 0 && index < weekDays.length)
-								weekDays[index] = Boolean.parseBoolean(value);
+				case "startTime":
+					startTime = new Time(value);
+					break;
+				case "endTime":
+					endTime = new Time(value);
+					break;
+				default:
+					if (node.getNodeName().startsWith("weekDay-")) {
+						int index = Integer.parseInt(node.getNodeName().substring(8)) - 1;
+						if (index >= 0 && index < weekDays.length) {
+							weekDays[index] = Boolean.parseBoolean(value);
 						}
+					}
 				}
 			}
 		});
@@ -140,11 +143,13 @@ public class Schedule {
 		boolean changed = !startTime.equals(oldStartTime);
 		changed |= !endTime.equals(oldEndTime);
 		
-		for (int i = 0; i < weekDays.length; ++i)
+		for (int i = 0; i < weekDays.length; ++i) {
 			changed |= weekDays[i] != oldWeekDays[i];
+		}
 		
-		if (changed)
+		if (changed) {
 			saveToFile();
+		}
 	}
 	
 	private final String fileName;

@@ -32,8 +32,9 @@ public class InfoReader {
 	public static void read(Account account, Info info) throws UnirestException, LoginFailedException {
 		Session session = new Session();
 		
-		if (!session.login(account.login, account.password))
+		if (!session.login(account.login, account.password)) {
 			throw new LoginFailedException();
+		}
 
 		List<Structure> structures = session.getStructureList();
 		info.addStructures(structures);

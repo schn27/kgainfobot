@@ -47,14 +47,14 @@ public class AccountsTableModel extends AbstractTableModel {
 	public Object getValueAt(int row, int col) {
 		Account account = accountsManager.get(row);
 		switch (col) {
-			case 0:
-				return account.name;
-			case 1:
-				return account.login;
-			case 2:
-				return account.password;
-			default:
-				return "";
+		case 0:
+			return account.name;
+		case 1:
+			return account.login;
+		case 2:
+			return account.password;
+		default:
+			return "";
 		}
 	}
 	
@@ -81,15 +81,15 @@ public class AccountsTableModel extends AbstractTableModel {
 	public void setValueAt(Object val, int row, int col) {
 		Account account = accountsManager.get(row);
 		switch (col) {
-			case 0:
-				accountsManager.set(row, new Account((String)val, account.login, account.password));
-				break;
-			case 1:
-				accountsManager.set(row, new Account(account.name, (String)val, account.password));
-				break;
-			case 2:
-				accountsManager.set(row, new Account(account.name, account.login, (String)val));
-				break;
+		case 0:
+			accountsManager.set(row, new Account((String)val, account.login, account.password));
+			break;
+		case 1:
+			accountsManager.set(row, new Account(account.name, (String)val, account.password));
+			break;
+		case 2:
+			accountsManager.set(row, new Account(account.name, account.login, (String)val));
+			break;
 		}
 		fireTableChanged(new TableModelEvent(this));
 	}

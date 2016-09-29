@@ -42,10 +42,7 @@ public final class Info {
 	
 	public List<Structure> getStructures() {
 		List<Structure> list = new ArrayList<>();
-		
-		for (StructureEntry s : structures.values())
-			list.add(s.structure);
-			
+		structures.values().forEach((s) -> list.add(s.structure));
 		return list;
 	}
 	
@@ -53,8 +50,9 @@ public final class Info {
 		List<Structure> ss = getStructures();
 		
 		for (Structure s : ss) {
-			if (s.code == code)
+			if (s.code == code) {
 				return s;
+			}
 		}
 		return new Structure(code, "?");
 	}
@@ -63,8 +61,7 @@ public final class Info {
 		List<Department> list = new ArrayList<>();
 		
 		if (structures.containsKey(structureCode)) {
-			for (DepartmentEntry d : structures.get(structureCode).departments.values())
-				list.add(d.department);
+			structures.get(structureCode).departments.values().forEach((d) -> list.add(d.department));
 		}
 			
 		return list;
@@ -73,8 +70,9 @@ public final class Info {
 	public Department getDepartment(Structure structure, int code) {
 		List<Department> dd = getDepartments(structure.code);
 		for (Department d : dd) {
-			if (d.code == code)
+			if (d.code == code) {
 				return d;
+			}
 		}
 		return new Department(0, code, "?", "?");
 	}
@@ -82,8 +80,9 @@ public final class Info {
 	public List<Theme> getThemes(int structureCode, int departmentCode) {
 		if (structures.containsKey(structureCode)) {
 			StructureEntry s = structures.get(structureCode);
-			if (s.departments.containsKey(departmentCode)) 
+			if (s.departments.containsKey(departmentCode)) {
 				return s.departments.get(departmentCode).themes;
+			}
 		}
 		
 		return new ArrayList<>();
@@ -92,8 +91,9 @@ public final class Info {
 	public Theme getTheme(Structure structure, Department department, int id) {
 		List<Theme> tt = getThemes(structure.code, department.code);
 		for (Theme t : tt) {
-			if (t.id == id)
+			if (t.id == id) {
 				return t;
+			}
 		}
 		return new Theme(id, "?");
 	}
@@ -103,31 +103,30 @@ public final class Info {
 	}
 	
 	public void addStructures(List<Structure>structures) {
-		for (Structure s : structures)
-			addStructure(s);
+		structures.forEach((s) -> addStructure(s));
 	}
 	
 	public void addDepartment(int code, Department department) {
-		if (structures.containsKey(code))
+		if (structures.containsKey(code)) {
 			structures.get(code).departments.put(department.code, new DepartmentEntry(department));
+		}
 	}
 
 	public void addDepartments(int structureCode, List<Department> departments) {
-		for (Department d : departments)
-			addDepartment(structureCode, d);
+		departments.forEach((d) -> addDepartment(structureCode, d));
 	}
 	
 	public void addTheme(int structureCode, int departmentCode, Theme theme) {
 		if (structures.containsKey(structureCode)) {
 			StructureEntry se = structures.get(structureCode);
-			if (se.departments.containsKey(departmentCode))
+			if (se.departments.containsKey(departmentCode)) {
 				se.departments.get(departmentCode).themes.add(theme);
+			}
 		}
 	}
 
 	public void addThemes(int structureCode, int departmentCode, List<Theme> themes) {
-		for (Theme t : themes)
-			addTheme(structureCode, departmentCode, t);
+		themes.forEach((t) -> addTheme(structureCode, departmentCode, t));
 	}	
 	
 	public void clear() {
